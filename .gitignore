@@ -1,0 +1,12 @@
+.pypirc
+*.py[cod]
+
+.idea/
+
+.vscode/
+
+db.sqlite3
+
+# For test
+# example/
+# manage.py
