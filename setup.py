@@ -100,9 +100,9 @@ setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    # packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
+    packages=['django_simple_api'],
     # If your package is a single module, use this instead of 'packages':
-    py_modules=['django_simple_api'],
+    # py_modules=['django_simple_api'],
 
     # entry_points={
     #     'console_scripts': ['mycli=mymodule:cli'],
