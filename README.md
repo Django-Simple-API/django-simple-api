@@ -4,6 +4,8 @@ A non-intrusive component that can help you quickly create APIs.
 
 ## How to use
 
+0. Run `pip install django-simple-api` to install.
+
 1. Add `'django_simple_api'` in `INSTALLED_APPS`
 
 2. Add `'django_simple_api.middleware.RequestParsingMiddleware'` in `MIDDLEWARE`
