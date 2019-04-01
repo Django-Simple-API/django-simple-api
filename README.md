@@ -1,20 +1,19 @@
 # Django Simple Api
 
-一个用于快速创建简单Api的非侵入式Django组件
+A non-intrusive component that can help you quickly create APIs.
 
-## 如何使用
+## How to use
 
-1. 将`'django_simple_api'` 加入 `INSTALLED_APPS`
+1. Add `'django_simple_api'` in `INSTALLED_APPS`
 
-2. 将 `'django_simple_api.middleware.RequestParsingMiddleware'` 加入 `MIDDLEWARE`
+2. Add `'django_simple_api.middleware.RequestParsingMiddleware'` in `MIDDLEWARE`
 
-然后你就可以愉快的使用了
+And then, you can use like
 
 ```python
-from django_simple_api.views import SimpleApiView
 from django_simple_api.response import jsonify
 
-class ReplyApiView(SimpleApiView):
+class ReplyApiView(ModelApiView):
     def get(self, request):
         return jsonify(request.JSON)
 ```
