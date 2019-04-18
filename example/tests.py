@@ -1,6 +1,7 @@
 import datetime
 from django.test import Client, TestCase
 from django.urls import reverse
+from django.utils.timezone import now
 from django.contrib.auth import get_user_model
 
 from .models import Article
@@ -33,9 +34,41 @@ class ModelTests(TestCase):
         )
 
     def test_api(self):
-        print(self.client.get(reverse('api_article')).json())
-        print(self.client.get(reverse('api_article') + '?id=1').json())
-        print(self.client.get(reverse('api_article') + '?id=2').json())
-        print(self.client.post(reverse('api_article'), data={'title': 'test-title-3'}).json())
+        self.assertListEqual(
+            self.client.get(reverse('api_article')).json(),
+            [{'id': 1, 'title': 'test-title-0', 'create_time': now().strftime("%Y-%m-%d"),
+              'update_time': now().strftime("%Y-%m-%d %H:%M:%S"),
+              'is_draft': True},
+             {'id': 2, 'title': 'test-title-1', 'create_time': now().strftime("%Y-%m-%d"),
+              'update_time': now().strftime("%Y-%m-%d %H:%M:%S"),
+              'is_draft': True},
+             {'id': 3, 'title': 'test-title-2', 'create_time': now().strftime("%Y-%m-%d"),
+              'update_time': now().strftime("%Y-%m-%d %H:%M:%S"),
+              'is_draft': True}]
+        )
+        self.assertDictEqual(
+            self.client.get(reverse('api_article') + '?id=1').json(),
+            {'data': {'articleview': {'id': 1, 'views': 0}, 'image': [], 'id': 1, 'title': 'test-title-0',
+                      'create_time': now().strftime("%Y-%m-%d"), 'update_time': now().strftime("%Y-%m-%d %H:%M:%S"),
+                      'body': 'testtesttest',
+                      'corpus': None, 'is_draft': True, 'tags': []}}
+        )
+        self.assertDictEqual(
+            self.client.get(reverse('api_article') + '?id=2').json(),
+            {'data': {'articleview': None, 'image': [], 'id': 2, 'title': 'test-title-1',
+                      'create_time': now().strftime("%Y-%m-%d"),
+                      'update_time': now().strftime("%Y-%m-%d %H:%M:%S"), 'body': 'testtesttest', 'corpus': None,
+                      'is_draft': True,
+                      'tags': []}}
+        )
+        self.assertDictEqual(
+            self.client.post(reverse('api_article'), data={'title': 'test-title-3'}).json(),
+            {'message': '未登录'}
+        )
         self.assertIs(self.client.login(username='Test', password='Test'), True)
-        print(self.client.post(reverse('api_article'), data={'title': 'test-title-3'}).json())
+        self.assertDictEqual(
+            self.client.post(reverse('api_article'), data={'title': 'test-title-3'}).json(),
+            {'message': 'Successfully new resource.',
+             'data': {'id': 4, 'title': 'test-title-3', 'create_time': now().strftime("%Y-%m-%d"),
+                      'update_time': now().strftime("%Y-%m-%d %H:%M:%S"), 'is_draft': False}}
+        )
