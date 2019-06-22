@@ -1,27 +1,26 @@
 import datetime
+from typing import List
 
+from django.core.files import File
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.db import models
-from django.core.files import File
+from django.utils import timezone
 
 
 class ModelSerializationMixin:
 
-    def get_m2m_qs(self, field_name: str, field):
-        return field.all()
+    def get_serialize_qs(self, field_name: str, field):
+        return getattr(self, f"serialize_{field_name}", lambda: field.all())()
 
-    def get_o2m_qs(self, field_name: str, field):
-        return field.all()
-
-    def get_exclude(self, exclude: [str]) -> []:
+    def get_exclude(self, exclude: List[str]) -> List:
         return exclude if exclude else []
 
     @staticmethod
     def _to_dict(
             self: models.Model,
-            fields: [str] = None,
-            exclude: [str] = None,
+            fields: List[str] = None,
+            exclude: List[str] = None,
             relation: bool = False,
             relation_data: bool = None,
             raw_data: bool = False
@@ -81,7 +80,7 @@ class ModelSerializationMixin:
                 field_name = field.name
 
             # 自定义规则筛选
-            query_set = self.get_m2m_qs(field_name, getattr(self, field_name))
+            query_set = self.get_serialize_qs(field_name, getattr(self, field_name))
 
             if relation_data:
                 result[field.name] = [self._to_dict(each) for each in query_set]
@@ -96,7 +95,7 @@ class ModelSerializationMixin:
                 field_name = field.related_name
 
             # 自定义规则筛选
-            query_set = self.get_o2m_qs(field_name, getattr(self, field_name))
+            query_set = self.get_serialize_qs(field_name, getattr(self, field_name))
 
             if relation_data:
                 result[field.name] = [self._to_dict(each) for each in query_set]
@@ -109,7 +108,7 @@ class ModelSerializationMixin:
                 if relation_data:
                     result[field.name] = self._to_dict(getattr(self, field.name))
                 else:
-                    result[field.name] = getattr(self, field.name + '_id')
+                    result[field.name] = getattr(self, field.name).id
             except ObjectDoesNotExist:
                 result[field.name] = None
 
@@ -126,7 +125,7 @@ class ModelSerializationMixin:
                 return
             # 将不能直接用json解析的对象转为字符串
             if isinstance(result[field.name], datetime.datetime):
-                result[field.name] = result[field.name].strftime("%Y-%m-%d %H:%M:%S")
+                result[field.name] = timezone.localtime(result[field.name]).strftime("%Y-%m-%d %H:%M:%S")
             elif isinstance(result[field.name], datetime.date):
                 result[field.name] = result[field.name].strftime("%Y-%m-%d")
             elif isinstance(result[field.name], (File,)):

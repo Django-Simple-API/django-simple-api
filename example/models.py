@@ -30,6 +30,9 @@ class Article(models.Model, ModelSerializationMixin):
     corpus = models.ForeignKey(Corpus, on_delete=models.SET_NULL, blank=True, null=True)
     is_draft = models.BooleanField("暂不发表", default=True)
 
+    class Meta:
+        ordering = ['id']
+
     def __str__(self):
         return self.title
 

@@ -18,8 +18,12 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path('api/article/', ArticleView.as_view(), name='api_article'),
-    path('api/tag/', TagView.as_view(), name='api_tag'),
-    path('api/corpus/', CorpusView.as_view(), name='api_corpus'),
-    path('api/image/', ImageView.as_view(), name='api_reference'),
+    path('api/article/', ArticleView.as_view(), name='api_articles'),
+    path('api/article/<int:id>', ArticleView.as_view(), name='api_article'),
+    path('api/tag/', TagView.as_view(), name='api_tags'),
+    path('api/tag/<int:id>', TagView.as_view(), name='api_tag'),
+    path('api/corpus/', CorpusView.as_view(), name='api_corpuss'),
+    path('api/corpus/<int:id>', CorpusView.as_view(), name='api_corpus'),
+    path('api/image/', ImageView.as_view(), name='api_references'),
+    path('api/image/<int:id>', ImageView.as_view(), name='api_reference'),
 ]

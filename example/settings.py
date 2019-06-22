@@ -110,7 +110,6 @@ USE_TZ = True
 # CORS demo settings
 
 CORS_SETTINGS = {
-    "hosts": "*",
-    'cookie': True,
-    'headers': []
+    "HOSTS": "*",
+    'COOKIES': True
 }
