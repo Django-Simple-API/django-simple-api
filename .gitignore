@@ -1,5 +1,3 @@
-.pypirc
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -83,6 +81,7 @@ celerybeat-schedule
 # virtualenv
 venv/
 ENV/
+.venv/
 
 # Spyder project settings
 .spyderproject
@@ -91,12 +90,15 @@ ENV/
 .ropeproject
 *.npy
 *.pkl
-.idea/
 
+# mypy
+.mypy_cache/
+
+# VSCode
 .vscode/
 
-db.sqlite3
+# PyCharm
+.idea/
 
-# For test
-# example/
-# manage.py
+# mkdocs
+site/
