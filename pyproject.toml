@@ -20,6 +20,9 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.6"
 
+django = "*"
+pydantic = "^1.6.1"
+
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
 flake8 = "*"
