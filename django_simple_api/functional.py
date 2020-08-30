@@ -1,4 +1,4 @@
-from typing import TypeVar, Any, Callable, Union
+from typing import TypeVar, Any, Callable, Union, Awaitable
 from inspect import signature
 from http import HTTPStatus
 
@@ -6,7 +6,7 @@ from pydantic import create_model
 
 from .fields import PathInfo, QueryInfo, HeaderInfo, CookieInfo, BodyInfo
 
-T = TypeVar("T")
+T = TypeVar("T", Callable[..., Any], Callable[..., Awaitable[Any]])
 
 
 def bound_params(func: T) -> T:
@@ -19,7 +19,7 @@ def bound_params(func: T) -> T:
 
     sig = signature(func)
     __params__ = {}
-    path, query, header, cookie, body = {}, {}, {}, {}, {}
+    path, query, header, cookie, body = {}, {}, {}, {}, {}  # type: ignore
 
     for name, param in sig.parameters.items():
         default = param.default

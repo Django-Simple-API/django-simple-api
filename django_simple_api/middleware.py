@@ -59,3 +59,4 @@ class SimpleApiMiddleware:
                 view_kwargs.update(model(**request.COOKIES).dict())
             elif name == "body":
                 view_kwargs.update(model(**request.DATA).dict())
+        return None
