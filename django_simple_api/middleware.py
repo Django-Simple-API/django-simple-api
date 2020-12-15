@@ -6,7 +6,7 @@ from django.http.request import HttpRequest
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from pydantic import ValidationError
 
-from .utils import _merge_multi_value
+from .utils import _merge_query_dict
 from .functional import bound_params
 
 
@@ -36,7 +36,7 @@ class SimpleApiMiddleware:
                 request.method = "POST"
                 request._load_post_and_files()
                 request.method = _shadow
-            request.DATA = request.POST
+            request.DATA = _merge_query_dict(request.POST)
 
         return self.get_response(request)
 
@@ -53,17 +53,21 @@ class SimpleApiMiddleware:
                 if name == "path":
                     view_kwargs.update(model(**view_kwargs).dict())
                 elif name == "query":
-                    view_kwargs.update(model(**request.GET).dict())
+                    view_kwargs.update(model(**_merge_query_dict(request.GET)).dict())
                 elif name == "header":
                     view_kwargs.update(model(**request.headers).dict())
                 elif name == "cookie":
                     view_kwargs.update(model(**request.COOKIES).dict())
                 elif name == "body":
                     view_kwargs.update(model(**request.DATA).dict())
+            return None
         except ValidationError as error:
             return self.process_validation_error(error)
 
     @staticmethod
     def process_validation_error(validation_error: ValidationError) -> HttpResponse:
-        return HttpResponse(validation_error.json(), content_type="application/json",
-                            status=HTTPStatus.UNPROCESSABLE_ENTITY)
+        return HttpResponse(
+            validation_error.json(),
+            content_type="application/json",
+            status=HTTPStatus.UNPROCESSABLE_ENTITY,
+        )

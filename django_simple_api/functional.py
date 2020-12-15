@@ -10,10 +10,6 @@ T = TypeVar("T", Callable[..., Any], Callable[..., Awaitable[Any]])
 
 
 def bound_params(func: T) -> T:
-    """
-    parse function annotation to pydantic.BaseModel,
-    and bound them in `func.__params__`.
-    """
     if hasattr(func, "__params__"):
         return func
 

@@ -1,8 +1,8 @@
 import typing
-import re
 
 from django.conf import settings
 from django.urls import URLPattern, URLResolver
+from django.http.request import QueryDict
 
 
 def get_urls() -> typing.Generator[typing.Tuple[str, typing.Any], None, None]:
@@ -25,17 +25,5 @@ def get_urls() -> typing.Generator[typing.Tuple[str, typing.Any], None, None]:
     yield from _(__import__(settings.ROOT_URLCONF, {}, {}, [""]).urlpatterns)
 
 
-def _merge_multi_value(raw_list):
-    """
-    If there are values with the same key value, they are merged into a List.
-    """
-    d = {}
-    for k, v in raw_list:
-        if k not in d:
-            d[k] = v
-            continue
-        if isinstance(d[k], list):
-            d[k].append(v)
-        else:
-            d[k] = [d[k], v]
-    return d
+def _merge_query_dict(query_dict: QueryDict) -> dict:
+    return {k: v if len(v) > 1 else v[0] for k, v in query_dict.items() if len(v) > 0}
