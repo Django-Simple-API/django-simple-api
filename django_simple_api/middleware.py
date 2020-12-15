@@ -1,10 +1,12 @@
 import json
-from copy import deepcopy
+from http import HTTPStatus
 from typing import Any, Callable, List, Dict, Optional
 
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse, HttpResponseBadRequest
+from pydantic import ValidationError
 
+from .utils import _merge_multi_value
 from .functional import bound_params
 
 
@@ -17,11 +19,11 @@ class SimpleApiMiddleware:
         if request.content_type.split(";", 1)[0] == "application/json":
             try:
                 request.JSON = json.loads(request.body)
-                request.DATA = request.JSON
             except ValueError as ve:
                 return HttpResponseBadRequest(
                     "Unable to parse JSON data. Error: {0}".format(ve)
                 )
+            request.DATA = request.JSON
         else:
             if request.method not in ("GET", "POST"):
                 # if you want to know why do that,
@@ -42,21 +44,26 @@ class SimpleApiMiddleware:
         self,
         request: HttpRequest,
         view_func: Callable,
-        view_args: List,
+        view_args: List[Any],
         view_kwargs: Dict[str, Any],
     ) -> Optional[HttpResponse]:
         view_func = bound_params(view_func)
-        path_params = deepcopy(view_kwargs)
-        view_kwargs.clear()
-        for name, model in getattr(view_func, "__params__"):
-            if name == "path":
-                view_kwargs.update(model(**path_params).dict())
-            elif name == "query":
-                view_kwargs.update(model(**request.GET).dict())
-            elif name == "header":
-                view_kwargs.update(model(**request.headers).dict())
-            elif name == "cookie":
-                view_kwargs.update(model(**request.COOKIES).dict())
-            elif name == "body":
-                view_kwargs.update(model(**request.DATA).dict())
-        return None
+        try:
+            for name, model in getattr(view_func, "__params__"):
+                if name == "path":
+                    view_kwargs.update(model(**view_kwargs).dict())
+                elif name == "query":
+                    view_kwargs.update(model(**request.GET).dict())
+                elif name == "header":
+                    view_kwargs.update(model(**request.headers).dict())
+                elif name == "cookie":
+                    view_kwargs.update(model(**request.COOKIES).dict())
+                elif name == "body":
+                    view_kwargs.update(model(**request.DATA).dict())
+        except ValidationError as error:
+            return self.process_validation_error(error)
+
+    @staticmethod
+    def process_validation_error(validation_error: ValidationError) -> HttpResponse:
+        return HttpResponse(validation_error.json(), content_type="application/json",
+                            status=HTTPStatus.UNPROCESSABLE_ENTITY)

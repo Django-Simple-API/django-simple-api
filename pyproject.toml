@@ -24,7 +24,7 @@ django = "*"
 pydantic = "^1.6.1"
 
 [tool.poetry.dev-dependencies]
-black = "^19.10b0"
+black = {version = "^20.8b1", allow-prereleases = true}
 flake8 = "*"
 pytest = "^5.4.3"
 

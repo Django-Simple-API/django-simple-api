@@ -1,8 +1,8 @@
-from typing import TypeVar, Any, Callable, Union, Awaitable
+from typing import Type, TypeVar, Any, Callable, Union, Awaitable, Dict
 from inspect import signature
 from http import HTTPStatus
 
-from pydantic import create_model
+from pydantic import BaseModel, create_model
 
 from .fields import PathInfo, QueryInfo, HeaderInfo, CookieInfo, BodyInfo
 
@@ -33,7 +33,7 @@ def bound_params(func: T) -> T:
             _type_ = cookie
         elif isinstance(default, BodyInfo):
             _type_ = body
-        elif isinstance(default, PathInfo) or default == param.default:
+        elif isinstance(default, PathInfo):
             _type_ = path
 
         if annotation != param.empty:
@@ -53,17 +53,49 @@ def bound_params(func: T) -> T:
 
 
 def describe_response(
-    status: Union[int, HTTPStatus], response_model: Any = None, description: str = "",
+    status: Union[int, HTTPStatus],
+    description: str = "",
+    *,
+    content: Union[Type[BaseModel], dict] = None,
+    headers: dict = None,
+    links: dict = None,
 ) -> Callable[[T], T]:
-    """bind status => response model in http handler"""
+    """
+    describe a response in HTTP view function
+    https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#responseObject
+    """
+    status = int(status)
+    if not description:
+        description = HTTPStatus(status).description
 
     def decorator(func: T) -> T:
-        """bind response model"""
-        if hasattr(func, "__responses__"):
-            getattr(func, "__responses__")[status] = {"model": response_model}
+        if not hasattr(func, "__responses__"):
+            responses: Dict[int, Dict[str, Any]] = {}
+            setattr(func, "__responses__", responses)
         else:
-            setattr(func, "__responses__", {status: {"model": response_model}})
-        getattr(func, "__responses__")[status]["description"] = description
+            responses = getattr(func, "__responses__")
+        responses[status] = {"description": description}
+
+        if content is not None:
+            responses[status]["content"] = content
+        if headers is not None:
+            responses[status]["headers"] = headers
+        if links is not None:
+            responses[status]["links"] = links
+
+        return func
+
+    return decorator
+
+
+def describe_responses(responses: Dict[int, dict]) -> Callable[[T], T]:
+    """
+    describe responses in HTTP view function
+    """
+
+    def decorator(func: T) -> T:
+        for status, info in responses.items():
+            func = describe_response(status, **info)(func)
         return func
 
     return decorator
