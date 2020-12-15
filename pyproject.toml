@@ -21,10 +21,11 @@ packages = [
 python = "^3.6"
 
 django = "*"
-pydantic = "^1.6.1"
+pydantic = "^1.7.3"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^20.8b1", allow-prereleases = true}
+mypy = "*"
 flake8 = "*"
 pytest = "^5.4.3"
 
