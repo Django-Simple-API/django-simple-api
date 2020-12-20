@@ -17,6 +17,8 @@ def get_urls() -> typing.Generator[typing.Tuple[str, typing.Any], None, None]:
         item = lis[0]
         if isinstance(item, URLPattern):
             # TODO 将 path 转换为 openapi3 标准格式
+            # <id> -> {id}
+            # <path:object_id> -> {object_id}
             yield prefix + str(item.pattern), item.callback
         elif isinstance(item, URLResolver):
             yield from _(item.url_patterns, prefix + str(item.pattern))
