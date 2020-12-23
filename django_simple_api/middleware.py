@@ -49,7 +49,7 @@ class SimpleApiMiddleware:
     ) -> Optional[HttpResponse]:
         view_func = bound_params(view_func)
         try:
-            for name, model in getattr(view_func, "__params__"):
+            for name, model in getattr(view_func, "__params__").items():
                 if name == "path":
                     view_kwargs.update(model(**view_kwargs).dict())
                 elif name == "query":
