@@ -15,9 +15,13 @@ def bound_params(func: T) -> T:
 
     sig = signature(func)
     __params__ = {}
-    path, query, header, cookie, body = {}, {}, {}, {}, {}  # type: ignore
+    path, query, header, cookie, body, other = {}, {}, {}, {}, {}, {}  # type: ignore
 
     for name, param in sig.parameters.items():
+        # 忽略部分参数
+        if name in ('self', 'request', '*args', '**kwargs'):
+            continue
+
         default = param.default
         annotation = param.annotation
 
@@ -31,6 +35,9 @@ def bound_params(func: T) -> T:
             _type_ = body
         elif isinstance(default, PathInfo):
             _type_ = path
+        else:
+            # 未标注类型的参数会被丢弃
+            _type_ = other
 
         if annotation != param.empty:
             if default == param.empty:
