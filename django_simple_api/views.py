@@ -20,21 +20,21 @@ def redoc(request: HttpRequest):
 
 
 class Home(View):
-
     def get(self, request, param1):
         print(param1)
         return HttpResponse()
 
 
 def default_func():
-    return '111'
+    return "111"
 
 
-def func(request: HttpRequest,
-         param1: int = Path(description='param1 ...', default_factory=default_func),
-         param2: str = Query('222', description='param2 ...'),
-         param3: int = Body(333, description='param3 ...'),
-         ) -> HttpResponse:
+def func(
+    request: HttpRequest,
+    param1: int = Path(description="param1 ...", default_factory=default_func),
+    param2: str = Query("222", description="param2 ..."),
+    param3: int = Body(333, description="param3 ..."),
+) -> HttpResponse:
 
     print(type(param1), param1)
     print(type(param2), param2)

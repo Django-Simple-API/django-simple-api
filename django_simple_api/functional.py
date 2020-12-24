@@ -64,16 +64,19 @@ def bind_params(view_func: T) -> T:
         return func
 
     if hasattr(view_func, "view_class"):
-        view_class = view_func.view_class
+        view_class = view_func.view_class  # type: ignore
         allow_methods = view_class.http_method_names
 
-        funcs = [getattr(view_class, method) for method in allow_methods if hasattr(view_class, method)]
+        funcs = [
+            getattr(view_class, method)
+            for method in allow_methods
+            if hasattr(view_class, method)
+        ]
 
         for cls_func in funcs:
             bind(cls_func)
 
-        setattr(view_func, "__params__", {"flag": "In the class-view, '__params__' attribute is only used as a mark, "
-                                                  "which means that the params of this class-view have been bound."})
+        setattr(view_func, "__params__", {})
         return view_func
     else:
         bind(view_func)
