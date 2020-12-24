@@ -1,3 +1,4 @@
+from types import MethodType
 from typing import Type, TypeVar, Any, Callable, Union, Awaitable, Dict
 from inspect import signature
 from http import HTTPStatus
@@ -9,9 +10,15 @@ from .fields import PathInfo, QueryInfo, HeaderInfo, CookieInfo, BodyInfo
 T = TypeVar("T", Callable[..., Any], Callable[..., Awaitable[Any]])
 
 
-def bound_params(func: T) -> T:
-    if hasattr(func, "__params__"):
-        return func
+def bound_params(real_func: T) -> T:
+    if hasattr(real_func, "__params__"):
+        return real_func
+
+    func: T
+    if isinstance(real_func, MethodType):
+        func = real_func.__func__
+    else:
+        func = real_func
 
     sig = signature(func)
     __params__ = {}
@@ -19,7 +26,7 @@ def bound_params(func: T) -> T:
 
     for name, param in sig.parameters.items():
         # 忽略部分参数
-        if name in ('self', 'request', '*args', '**kwargs'):
+        if name in ("self", "request", "*args", "**kwargs"):
             continue
 
         default = param.default
@@ -52,7 +59,7 @@ def bound_params(func: T) -> T:
             __params__[key] = create_model(f"temporary_{key}", **locals()[key])
 
     setattr(func, "__params__", __params__)
-    return func
+    return real_func
 
 
 def describe_response(
