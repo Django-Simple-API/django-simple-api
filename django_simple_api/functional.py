@@ -73,7 +73,7 @@ def bind_params(view_func: T) -> T:
             bind(cls_func)
 
         setattr(view_func, "__params__", {"flag": "In the class-view, '__params__' attribute is only used as a mark, "
-                                                  "which means that the parameter of this class-view have been bound."})
+                                                  "which means that the params of this class-view have been bound."})
         return view_func
     else:
         bind(view_func)
