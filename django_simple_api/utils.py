@@ -3,52 +3,42 @@ import typing
 
 from django.conf import settings
 from django.urls import URLPattern, URLResolver
+from django.urls.conf import RoutePattern, RegexPattern
 from django.http.request import QueryDict
 
-CONVERT_REG = [
-    r"\^?([a-zA-Z0-9_]+)\$?",  # /articles
-    r"\^?<([a-zA-Z0-9_]+)>\$?",  # /<name>
-    r"\^?<[a-zA-Z]+:([a-zA-Z0-9_]+)>\$?",  # /<int:id>
-    r"\^?\(\?P<(.*?)>.*?\)\$?",  # '^(?P<app_label>auth)'
-]
+RE_PATH_PATTERN = re.compile(r"\(\?P<(?P<name>\w*)>.*?\)")
+PATH_PATTERN = re.compile(r"<(.*?:)?(?P<name>\w*)>")
+REPLACE_RE_FLAG_PATTERN = re.compile(r"(?<!\\)\^|(?<!\\)\$")
 
 
-def convert_url(url_pattern: URLPattern) -> typing.Generator[str, None, None]:
-    path_list: typing.List[str] = str(url_pattern.pattern).split("/")
-    for path in path_list:
-        if path in ["", "$"]:
-            yield ""
-            continue
-        for idx, reg in enumerate(CONVERT_REG):
-            match_res = re.match(reg, path)
-            if match_res is None:
-                continue
-            if idx == 0:
-                yield match_res.group(1)
-            else:
-                yield "{%s}" % match_res.group(1)
-            break
-        else:
-            yield path
+def _reformat_pattern(pattern: typing.Union[RoutePattern, RegexPattern]) -> str:
+    path_format = str(pattern)
+    if isinstance(pattern, RoutePattern):
+        pattern = PATH_PATTERN
+    else:  # RegexPattern
+        path_format = re.sub(REPLACE_RE_FLAG_PATTERN, "", path_format)
+        pattern = RE_PATH_PATTERN
+    return re.sub(pattern, r"{\g<name>}", path_format)
 
 
-def get_urls() -> typing.Generator[typing.Tuple[str, typing.Any], None, None]:
+RouteGenerator = typing.Generator[typing.Tuple[str, typing.Any], None, None]
+
+
+def get_urls() -> RouteGenerator:
     def _(
-        lis, prefix: str = ""
-    ) -> typing.Generator[typing.Tuple[str, typing.Any], None, None]:
+        urlpatterns: typing.List[typing.Union[URLPattern, URLResolver]],
+        prefix: str = "",
+    ) -> RouteGenerator:
         """
         return urlpatterns and view function
         """
-        if not lis:
-            return
-        item = lis[0]
-        if isinstance(item, URLPattern):
-            # 将 path 转换为 openapi3 标准格式
-            print("---contrast: " + prefix + str(item.pattern))
-            yield prefix + "/".join(convert_url(item)), item.callback
-        elif isinstance(item, URLResolver):
-            yield from _(item.url_patterns, prefix + str(item.pattern))
-        yield from _(lis[1:], prefix)
+        for item in urlpatterns:
+            if isinstance(item, URLPattern):
+                yield prefix + _reformat_pattern(item.pattern), item.callback
+            else:
+                yield from _(
+                    item.url_patterns, prefix + _reformat_pattern(item.pattern)
+                )
 
     yield from _(__import__(settings.ROOT_URLCONF, {}, {}, [""]).urlpatterns)
 
