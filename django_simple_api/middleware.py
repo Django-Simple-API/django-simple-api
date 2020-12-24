@@ -2,12 +2,12 @@ import json
 from http import HTTPStatus
 from typing import Any, Callable, List, Dict, Optional
 
+from pydantic import ValidationError
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse, HttpResponseBadRequest
-from pydantic import ValidationError
 
 from .utils import _merge_query_dict
-from .functional import bound_params
+from .functional import bind_params
 
 
 class SimpleApiMiddleware:
@@ -47,7 +47,7 @@ class SimpleApiMiddleware:
         view_args: List[Any],
         view_kwargs: Dict[str, Any],
     ) -> Optional[HttpResponse]:
-        view_func = bound_params(view_func)
+        view_func = bind_params(view_func)
         try:
             for name, model in getattr(view_func, "__params__").items():
                 if name == "path":
