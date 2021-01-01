@@ -16,10 +16,10 @@ def allow_methods(method: Union[str, List[str]]) -> Callable[[T], T]:
     elif isinstance(method, list):
         methods = method
     else:
-        raise TypeError('`method` must be str or list!')
+        raise TypeError("`method` must be str or list!")
 
     def wrapper(view_func: T):
-        setattr(view_func, '__methods__', methods)
+        setattr(view_func, "__methods__", methods)
         return view_func
 
     return wrapper
