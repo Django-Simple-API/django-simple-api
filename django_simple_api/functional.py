@@ -1,6 +1,6 @@
 from http import HTTPStatus
 from types import MethodType
-from typing import Type, TypeVar, Any, Callable, Union, Awaitable, Dict
+from typing import Type, TypeVar, Any, Callable, Union, Awaitable, Dict, List
 from inspect import signature
 
 from pydantic import BaseModel, create_model
@@ -67,11 +67,7 @@ def bind_params(view_func: T) -> T:
         view_class = view_func.view_class  # type: ignore
         allow_methods = view_class.http_method_names
 
-        funcs = [
-            getattr(view_class, method)
-            for method in allow_methods
-            if hasattr(view_class, method)
-        ]
+        funcs = [getattr(view_class, method) for method in allow_methods if hasattr(view_class, method)]  # type: ignore
 
         for cls_func in funcs:
             bind(cls_func)
@@ -81,6 +77,25 @@ def bind_params(view_func: T) -> T:
     else:
         bind(view_func)
     return view_func
+
+
+def allow_methods(method: Union[str, List[str]]):
+    """
+    Declare the request methods allowed by the view function.
+    """
+
+    if isinstance(method, str):
+        methods = [method]
+    elif isinstance(method, list):
+        methods = method
+    else:
+        raise TypeError('`method` must be str or list!')
+
+    def wrapper(view_func: T):
+        setattr(view_func, '__methods__', methods)
+        return view_func
+
+    return wrapper
 
 
 def describe_response(
