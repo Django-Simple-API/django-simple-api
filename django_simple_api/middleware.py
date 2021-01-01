@@ -4,7 +4,11 @@ from typing import Any, Callable, List, Dict, Optional
 
 from pydantic import ValidationError
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse, HttpResponseBadRequest
+from django.http.response import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseNotAllowed,
+)
 
 from .utils import bind_params, _merge_query_dict
 
@@ -47,6 +51,8 @@ class SimpleApiMiddleware:
         view_kwargs: Dict[str, Any],
     ) -> Optional[HttpResponse]:
         view_func = bind_params(view_func)
+
+        # type checking of request parameters
         try:
             for name, model in getattr(view_func, "__params__").items():
                 if name == "path":
@@ -59,9 +65,20 @@ class SimpleApiMiddleware:
                     view_kwargs.update(model(**request.COOKIES).dict())
                 elif name == "body":
                     view_kwargs.update(model(**request.DATA).dict())
-            return None
         except ValidationError as error:
             return self.process_validation_error(error)
+
+        # check the request method of view function
+        # class-view does not need to be checked
+        if hasattr(view_func, "view_class"):
+            return None
+
+        allow_methods = getattr(view_func, "__methods__", [])
+        if request.method.upper() not in allow_methods:
+            return HttpResponseNotAllowed(allow_methods)
+
+        # check completed
+        return None
 
     @staticmethod
     def process_validation_error(validation_error: ValidationError) -> HttpResponse:

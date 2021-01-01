@@ -12,9 +12,9 @@ def allow_methods(method: Union[str, List[str]]) -> Callable[[T], T]:
     """
 
     if isinstance(method, str):
-        methods = [method]
+        methods = [method.upper()]
     elif isinstance(method, list):
-        methods = method
+        methods = [m.upper() for m in method]
     else:
         raise TypeError("`method` must be str or list!")
 
