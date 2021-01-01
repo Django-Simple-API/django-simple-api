@@ -6,8 +6,7 @@ from pydantic import ValidationError
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse, HttpResponseBadRequest
 
-from .utils import _merge_query_dict
-from .functional import bind_params
+from .utils import bind_params, _merge_query_dict
 
 
 class SimpleApiMiddleware:

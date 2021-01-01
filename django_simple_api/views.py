@@ -2,8 +2,8 @@ from django.views import View
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 
-from .utils import get_urls
-from .functional import bind_params, allow_methods, describe_response
+from .utils import get_urls, bind_params
+from .decorators import allow_methods, describe_response
 from .field_functions import Path, Query, Body
 
 
@@ -45,7 +45,6 @@ def func(
     param2: str = Query("222", description="param2 ..."),
     param3: int = Body(333, description="param3 ..."),
 ) -> HttpResponse:
-
     print(type(param1), param1)
     print(type(param2), param2)
     print(type(param3), param3)
