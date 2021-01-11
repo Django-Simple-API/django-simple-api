@@ -19,7 +19,7 @@ class SimpleApiMiddleware:
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
         request.JSON = None
-        if request.content_type.split(";", 1)[0] == "application/json":
+        if request.content_type == "application/json":
             try:
                 request.JSON = json.loads(request.body)
             except ValueError as ve:

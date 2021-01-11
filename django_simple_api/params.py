@@ -2,7 +2,6 @@ from typing import TypeVar, Callable, Awaitable, Dict, List, Any
 from inspect import signature, isclass
 from functools import partial
 
-from django.http.request import QueryDict
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from pydantic import BaseModel, ValidationError, create_model
@@ -118,27 +117,20 @@ async def bound_params(handler: Callable, request: HttpRequest) -> Callable:
 
             if "query" in parameters:
                 data.append(
-                    parameters["query"].parse_obj(
-                        merge_query_dict(request.query_params.multi_items())
-                    )
+                    parameters["query"].parse_obj(merge_query_dict(request.GET))
                 )
 
             if "header" in parameters:
                 data.append(
-                    parameters["header"].parse_obj(
-                        merge_query_dict(request.headers.items())
-                    )
+                    parameters["header"].parse_obj(merge_query_dict(request.headers))
                 )
 
             if "cookie" in parameters:
-                data.append(parameters["cookie"].parse_obj(request.cookies))
+                data.append(parameters["cookie"].parse_obj(request.COOKIES))
 
         # try to get body model and parse
         if request_body:
-            _body_data = request.DATA
-            if isinstance(_body_data, QueryDict):
-                _body_data = merge_query_dict(_body_data)
-            data.append(request_body.parse_obj(_body_data))
+            data.append(request_body.parse_obj(request.DATA))
 
     except ValidationError as e:
         raise RequestValidationError(e)
