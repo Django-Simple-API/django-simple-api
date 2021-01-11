@@ -2,7 +2,6 @@ import json
 from http import HTTPStatus
 from typing import Any, Callable, List, Dict, Optional
 
-from pydantic import ValidationError
 from django.http.request import HttpRequest
 from django.http.response import (
     HttpResponse,
@@ -10,7 +9,8 @@ from django.http.response import (
     HttpResponseNotAllowed,
 )
 
-from .utils import bind_params, _merge_query_dict
+from .utils import merge_query_dict
+from .exceptions import RequestValidationError
 
 
 class SimpleApiMiddleware:
@@ -30,7 +30,7 @@ class SimpleApiMiddleware:
         else:
             if request.method not in ("GET", "POST"):
                 # if you want to know why do that,
-                # read https://abersheeran.com/articles/Django-Parse-non-POST-Request/
+                # read https://aber.sh/articles/Django-Parse-non-POST-Request/
                 if hasattr(request, "_post"):
                     del request._post
                     del request._files
@@ -39,7 +39,7 @@ class SimpleApiMiddleware:
                 request.method = "POST"
                 request._load_post_and_files()
                 request.method = _shadow
-            request.DATA = _merge_query_dict(request.POST)
+            request.DATA = merge_query_dict(request.POST)
 
         return self.get_response(request)
 
@@ -50,22 +50,13 @@ class SimpleApiMiddleware:
         view_args: List[Any],
         view_kwargs: Dict[str, Any],
     ) -> Optional[HttpResponse]:
-        view_func = bind_params(view_func)
 
         # type checking of request parameters
         try:
-            for name, model in getattr(view_func, "__params__").items():
-                if name == "path":
-                    view_kwargs.update(model(**view_kwargs).dict())
-                elif name == "query":
-                    view_kwargs.update(model(**_merge_query_dict(request.GET)).dict())
-                elif name == "header":
-                    view_kwargs.update(model(**request.headers).dict())
-                elif name == "cookie":
-                    view_kwargs.update(model(**request.COOKIES).dict())
-                elif name == "body":
-                    view_kwargs.update(model(**request.DATA).dict())
-        except ValidationError as error:
+            # TODO
+            # 这里该把 Django 路径参数从 view_args 和 view_kwargs 中摘出来
+            pass
+        except RequestValidationError as error:
             return self.process_validation_error(error)
 
         # check the request method of view function
@@ -81,7 +72,9 @@ class SimpleApiMiddleware:
         return None
 
     @staticmethod
-    def process_validation_error(validation_error: ValidationError) -> HttpResponse:
+    def process_validation_error(
+        validation_error: RequestValidationError,
+    ) -> HttpResponse:
         return HttpResponse(
             validation_error.json(),
             content_type="application/json",

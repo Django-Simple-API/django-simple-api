@@ -1,16 +1,10 @@
 from typing import Any, Optional
 
-from pydantic.fields import Undefined, NoArgAnyCallable
+from pydantic.fields import NoArgAnyCallable, Undefined
 
-from .fields import PathInfo, QueryInfo, HeaderInfo, CookieInfo, BodyInfo
+from .fields import BodyInfo, CookieInfo, ExclusiveInfo, HeaderInfo, PathInfo, QueryInfo
 
-__all__ = [
-    "Path",
-    "Query",
-    "Header",
-    "Cookie",
-    "Body",
-]
+__all__ = ["Path", "Query", "Header", "Cookie", "Body", "Exclusive"]
 
 
 def Path(
@@ -381,3 +375,21 @@ def Body(
         regex=regex,
         **extra,
     )
+
+
+def Exclusive(
+    name: str,
+    *,
+    title: str = None,
+    description: str = None,
+) -> Any:
+    """
+    Mark the type model of this parameter to accept all the data of the specified parameter.
+
+    :param name: Literal["path", "query", "header", "cookie", "body"] mark exclusive parameter types
+    :param title: can be any string, used in the schema
+    :param description: can be any string, used in the schema
+    """
+    if name not in ("path", "query", "header", "cookie", "body"):
+        raise ValueError('name must be in "path", "query", "header", "cookie", "body"')
+    return ExclusiveInfo(name, title, description)

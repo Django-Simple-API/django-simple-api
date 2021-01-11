@@ -1,25 +1,33 @@
+import sys
 from http import HTTPStatus
-from typing import Type, TypeVar, Any, Callable, Union, Awaitable, Dict, List
+from typing import Type, TypeVar, Any, Callable, Union, Dict, List
+from inspect import isclass
 
-from pydantic import BaseModel
+if sys.version_info >= (3, 9):
+    # https://www.python.org/dev/peps/pep-0585/
 
-T = TypeVar("T", Callable[..., Any], Callable[..., Awaitable[Any]])
+    from types import GenericAlias
+
+    GenericType = (GenericAlias, type(List[str]))
+else:
+    GenericType = (type(List[str]),)
+
+from pydantic import BaseModel, create_model
+from pydantic.utils import display_as_type
+
+T = TypeVar("T")
 
 
-def allow_methods(method: Union[str, List[str]]) -> Callable[[T], T]:
+def only_allow_method(method: str) -> Callable[[T], T]:
     """
-    Declare the request methods allowed by the view function.
+    Declare the request method allowed by the view function.
     """
 
-    if isinstance(method, str):
-        methods = [method.upper()]
-    elif isinstance(method, list):
-        methods = [m.upper() for m in method]
-    else:
-        raise TypeError("`method` must be str or list!")
+    def wrapper(view_func: T) -> T:
+        if isclass(view_func):
+            raise TypeError("Can only be used for functions")
 
-    def wrapper(view_func: T):
-        setattr(view_func, "__methods__", methods)
+        setattr(view_func, "__method__", method)
         return view_func
 
     return wrapper
@@ -47,14 +55,32 @@ def describe_response(
             setattr(func, "__responses__", responses)
         else:
             responses = getattr(func, "__responses__")
-        responses[status] = {"description": description}
 
-        if content is not None:
-            responses[status]["content"] = content
-        if headers is not None:
-            responses[status]["headers"] = headers
-        if links is not None:
-            responses[status]["links"] = links
+        if (
+            content is None
+            or isinstance(content, dict)
+            or (
+                not isinstance(content, GenericType)
+                and isclass(content)
+                and issubclass(content, BaseModel)
+            )
+        ):
+            real_content = content
+        else:
+            real_content = create_model(
+                f"ParsingModel[{display_as_type(content)}]", __root__=(content, ...)
+            )
+
+        responses[status] = {
+            k: v
+            for k, v in {
+                "description": description,
+                "content": real_content,
+                "headers": headers,
+                "links": links,
+            }.items()
+            if v
+        }
 
         return func
 

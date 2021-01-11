@@ -1,3 +1,6 @@
+import dataclasses
+from typing import Optional
+
 from pydantic.fields import FieldInfo
 
 
@@ -19,3 +22,10 @@ class CookieInfo(FieldInfo):
 
 class BodyInfo(FieldInfo):
     pass
+
+
+@dataclasses.dataclass
+class ExclusiveInfo:
+    name: str
+    title: Optional[str] = None
+    description: Optional[str] = None
