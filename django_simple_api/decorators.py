@@ -18,7 +18,7 @@ from pydantic.utils import display_as_type
 T = TypeVar("T")
 
 
-def only_allow_method(method: str) -> Callable[[T], T]:
+def allow_method(method: str) -> Callable[[T], T]:
     """
     Declare the request method allowed by the view function.
     """
@@ -27,7 +27,7 @@ def only_allow_method(method: str) -> Callable[[T], T]:
         if isclass(view_func):
             raise TypeError("Can only be used for functions")
 
-        setattr(view_func, "__method__", method)
+        setattr(view_func, "__method__", method.upper())
         return view_func
 
     return wrapper
