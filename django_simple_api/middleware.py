@@ -64,7 +64,7 @@ class SimpleApiMiddleware:
         if hasattr(view_func, "view_class"):
             return None
 
-        allow_method = getattr(view_func, "__method__", '')
+        allow_method = getattr(view_func, "__method__", "")
         if request.method.upper() == allow_method:
             return HttpResponseNotAllowed([allow_method])
 
