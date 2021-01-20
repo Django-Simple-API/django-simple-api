@@ -1,5 +1,5 @@
 import re
-from typing import Any, List, Union, Generator, Tuple
+from typing import Any, List, Union, Generator, Tuple, Callable
 
 from django.conf import settings
 from django.urls import URLPattern, URLResolver
@@ -42,3 +42,10 @@ def get_urls() -> Generator[Tuple[str, Any], None, None]:
 
 def merge_query_dict(query_dict: QueryDict) -> dict:
     return {k: v if len(v) > 1 else v[0] for k, v in query_dict.items() if len(v) > 0}
+
+
+def is_view_class(handler: Callable) -> bool:
+    """
+    Judge handler is django.views.View subclass
+    """
+    return hasattr(handler, "view_class")

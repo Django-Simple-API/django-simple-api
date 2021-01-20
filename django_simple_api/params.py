@@ -1,20 +1,14 @@
-from typing import TypeVar, Callable, Awaitable, Dict, List, Any
+from typing import TypeVar, Callable, Dict, List, Any
 from inspect import signature, isclass
-from functools import partial
 
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse
 from pydantic import BaseModel, ValidationError, create_model
 
-from .utils import merge_query_dict
+from .utils import merge_query_dict, is_view_class
 from .exceptions import RequestValidationError
 from .fields import QueryInfo, HeaderInfo, CookieInfo, BodyInfo, PathInfo, ExclusiveInfo
 
-HTTPHandler = TypeVar(
-    "HTTPHandler",
-    Callable[..., HttpResponse],
-    Callable[..., Awaitable[HttpResponse]],
-)
+HTTPHandler = TypeVar("HTTPHandler", bound=Callable)
 
 
 def create_model_config(title: str = None, description: str = None):
@@ -29,8 +23,8 @@ def create_model_config(title: str = None, description: str = None):
     return ExclusiveModelConfig
 
 
-def parse_params(function: Callable) -> Callable:
-    sig = signature(function)
+def _parse_and_bound_params(handler: HTTPHandler) -> HTTPHandler:
+    sig = signature(handler)
 
     __parameters__ = {}
     __exclusive_models__ = {}
@@ -85,35 +79,34 @@ def parse_params(function: Callable) -> Callable:
         __parameters__[key] = create_model("temporary_model", **locals()[key])  # type: ignore
 
     if "body" in __parameters__:
-        setattr(function, "__request_body__", __parameters__.pop("body"))
+        setattr(handler, "__request_body__", __parameters__.pop("body"))
 
     if __parameters__:
-        setattr(function, "__parameters__", __parameters__)
+        setattr(handler, "__parameters__", __parameters__)
 
     if __exclusive_models__:
-        setattr(function, "__exclusive_models__", __exclusive_models__)
+        setattr(handler, "__exclusive_models__", __exclusive_models__)
 
-    return function
+    return handler
 
 
-async def bound_params(handler: Callable, request: HttpRequest) -> Callable:
-    """
-    bound parameters "path", "query", "header", "cookie", "body" to the view function
-    """
+def _generate_parameters(
+    handler: HTTPHandler, request: HttpRequest, may_path_params: Dict[str, Any]
+) -> Dict[str, Any]:
     parameters = getattr(handler, "__parameters__", None)
     request_body = getattr(handler, "__request_body__", None)
     exclusive_models = getattr(handler, "__exclusive_models__", {})
     if not (parameters or request_body):
-        return handler
+        return {}
 
     data: List[Any] = []
-    kwargs: Dict[str, BaseModel] = {}
+    kwargs: Dict[str, Any] = {}
 
     try:
         # try to get parameters model and parse
         if parameters:
             if "path" in parameters:
-                data.append(parameters["path"].parse_obj(request.path_params))
+                data.append(parameters["path"].parse_obj(may_path_params))
 
             if "query" in parameters:
                 data.append(
@@ -142,4 +135,34 @@ async def bound_params(handler: Callable, request: HttpRequest) -> Callable:
             kwargs[exclusive_models[_data.__class__]] = _data.__root__
         else:
             kwargs[exclusive_models[_data.__class__]] = _data
-    return partial(handler, **kwargs)
+
+    return kwargs
+
+
+def parse_and_bound_params(handler: Any) -> None:
+    if is_view_class(handler):
+        view_class = handler.view_class
+        for method in view_class.http_method_names:
+            if not hasattr(view_class, method):
+                continue
+            setattr(
+                view_class, method, _parse_and_bound_params(getattr(view_class, method))
+            )
+    else:
+        _parse_and_bound_params(handler)
+
+
+def generate_parameters(
+    handler: Any, request: HttpRequest, may_path_params: Dict[str, Any]
+) -> Dict[str, Any]:
+    if is_view_class(handler):
+        return _generate_parameters(
+            getattr(
+                handler.view_class,
+                request.method.lower(),
+                handler.view_class.http_method_not_allowed,
+            ),
+            request,
+            may_path_params,
+        )
+    return _generate_parameters(handler, request, may_path_params)

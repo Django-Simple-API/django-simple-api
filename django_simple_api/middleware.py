@@ -9,8 +9,9 @@ from django.http.response import (
     HttpResponseNotAllowed,
 )
 
-from .utils import merge_query_dict
+from .utils import merge_query_dict, is_view_class
 from .exceptions import RequestValidationError
+from .params import generate_parameters
 
 
 class SimpleApiMiddleware:
@@ -40,7 +41,6 @@ class SimpleApiMiddleware:
                 request._load_post_and_files()
                 request.method = _shadow
             request.DATA = merge_query_dict(request.POST)
-
         return self.get_response(request)
 
     def process_view(
@@ -53,23 +53,20 @@ class SimpleApiMiddleware:
 
         # type checking of request parameters
         try:
-            # TODO
-            # 这里该把 Django 路径参数从 view_args 和 view_kwargs 中摘出来
-            pass
+            view_kwargs.update(generate_parameters(view_func, request, view_kwargs))
         except RequestValidationError as error:
             return self.process_validation_error(error)
 
         # check the request method of view function
         # class-view does not need to be checked
-        if hasattr(view_func, "view_class"):
+        if is_view_class(view_func):
             return None
 
         allow_method = getattr(view_func, "__method__", "")
-        if request.method.upper() == allow_method:
+        if request.method.upper() != allow_method:
             return HttpResponseNotAllowed([allow_method])
 
-        # check completed
-        return None
+        return None  # check completed
 
     @staticmethod
     def process_validation_error(

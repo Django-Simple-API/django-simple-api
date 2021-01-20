@@ -16,7 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from .views import JustTest
+
 urlpatterns = [
-    # path("admin/", admin.site.urls),
+    path("admin/", admin.site.urls),
     path("docs/", include("django_simple_api.urls")),
+    path("just-test/<id>", JustTest.as_view()),
 ]
