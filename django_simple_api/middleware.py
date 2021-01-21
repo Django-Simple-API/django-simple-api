@@ -55,7 +55,7 @@ class SimpleApiMiddleware:
         # class-view does not need to be checked
         if not is_class_view(view_func):
             allow_method = getattr(view_func, "__method__", "")
-            if request.method.upper() != allow_method:
+            if allow_method and request.method.upper() != allow_method:
                 return HttpResponseNotAllowed([allow_method])
 
         # type checking of request parameters
