@@ -4,7 +4,7 @@ from inspect import signature, isclass
 from django.http.request import HttpRequest
 from pydantic import BaseModel, ValidationError, create_model
 
-from .utils import merge_query_dict, is_view_class
+from .utils import merge_query_dict, is_class_view
 from .exceptions import RequestValidationError
 from .fields import QueryInfo, HeaderInfo, CookieInfo, BodyInfo, PathInfo, ExclusiveInfo
 
@@ -140,7 +140,7 @@ def _generate_parameters(
 
 
 def parse_and_bound_params(handler: Any) -> None:
-    if is_view_class(handler):
+    if is_class_view(handler):
         view_class = handler.view_class
         for method in view_class.http_method_names:
             if not hasattr(view_class, method):
@@ -155,7 +155,7 @@ def parse_and_bound_params(handler: Any) -> None:
 def generate_parameters(
     handler: Any, request: HttpRequest, may_path_params: Dict[str, Any]
 ) -> Dict[str, Any]:
-    if is_view_class(handler):
+    if is_class_view(handler):
         return _generate_parameters(
             getattr(
                 handler.view_class,

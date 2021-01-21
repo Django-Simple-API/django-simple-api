@@ -9,7 +9,7 @@ from django.http.response import (
     HttpResponseNotAllowed,
 )
 
-from .utils import merge_query_dict, is_view_class
+from .utils import merge_query_dict, is_class_view
 from .exceptions import RequestValidationError
 from .params import generate_parameters
 
@@ -51,20 +51,18 @@ class SimpleApiMiddleware:
         view_kwargs: Dict[str, Any],
     ) -> Optional[HttpResponse]:
 
+        # check the request method of view function
+        # class-view does not need to be checked
+        if not is_class_view(view_func):
+            allow_method = getattr(view_func, "__method__", "")
+            if request.method.upper() != allow_method:
+                return HttpResponseNotAllowed([allow_method])
+
         # type checking of request parameters
         try:
             view_kwargs.update(generate_parameters(view_func, request, view_kwargs))
         except RequestValidationError as error:
             return self.process_validation_error(error)
-
-        # check the request method of view function
-        # class-view does not need to be checked
-        if is_view_class(view_func):
-            return None
-
-        allow_method = getattr(view_func, "__method__", "")
-        if request.method.upper() != allow_method:
-            return HttpResponseNotAllowed([allow_method])
 
         return None  # check completed
 
