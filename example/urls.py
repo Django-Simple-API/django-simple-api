@@ -16,10 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from .views import JustTest
+from . import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("docs/", include("django_simple_api.urls")),
-    path("just-test/<id>", JustTest.as_view()),
+    path("just-test/<id>", views.JustTest.as_view()),
+
+    path("test-get-func/<name>", views.test_get_func),
+    path("test-post-func/<name>", views.test_post_func),
+    path("test-put-func/<id>", views.test_put_func),
 ]
