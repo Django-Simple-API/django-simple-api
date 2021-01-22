@@ -70,17 +70,17 @@ class TestFunctionView(TestCase):
     def test_success_delete(self):
         cookies = self.client.cookies
         cookies["session_id"] = 2
-        resp = self.client.put("/test-delete-func/1")
+        resp = self.client.delete("/test-delete-func/1")
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.content, b"12")  # default = "2"
+        self.assertEqual(resp.content, b"12")  # "1" + "2" = "12"
 
-        resp = self.client.delete("/test-delete-func/2", HTTP_COOKIES="session_id=666")
+        resp = self.client.delete("/test-delete-func/2")
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.content, b"23")
+        self.assertEqual(resp.content, b"22")
 
     def test_failed_delete(self):
-        resp = self.client.get("/test-delete-func/1")
-        self.assertEqual(resp.status_code, 405)
+        resp = self.client.delete("/test-delete-func/1")
+        self.assertEqual(resp.status_code, 422)
 
 
 class TestExclusive(TestCase):
@@ -100,5 +100,39 @@ class TestExclusive(TestCase):
             "/test-query-page-by-exclusive", data={"page-size": 20, "page-num": 3}
         )
         self.assertEqual(resp.content, b"40")
+
+
+class TestCommonView(TestCase):
+    def test_func_view_success(self):
+        resp = self.client.get("/test-common-func-view", data={"id": 1})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content, b"1")
+
+        resp = self.client.post("/test-common-func-view", data={"name": "Rie"})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content, b"Rie")
+
+    def test_path_func_view_success(self):
+        resp = self.client.get("/test-common-func-view/1", data={"name": "Rie"})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content, b"1Rie")
+
+        resp = self.client.post("/test-common-func-view/2", data={"name": "Rie"})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content, b"2")
+
+    def test_class_view_success(self):
+        resp = self.client.get("/test-common-class-view", data={"id": 1})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content, b"1")
+
+        resp = self.client.post("/test-common-class-view", data={"name": "Rie"})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content, b"Rie")
+
+    def test_class_view_failed(self):
+        resp = self.client.put("/test-common-class-view")
+        self.assertEqual(resp.status_code, 405)
+
 
 
