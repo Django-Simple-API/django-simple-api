@@ -26,7 +26,7 @@ def shell(command: str) -> None:
 
 
 if __name__ == "__main__":
-    shell("black --check django_simple_api")
+    shell("black --check django_simple_api example")
     shell("mypy -p django_simple_api --ignore-missing-imports")
     shell("flake8 django_simple_api --ignore W503,E203,E501,E731")
     shell("pytest -o log_cli=true -o log_cli_level=DEBUG")
