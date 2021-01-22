@@ -6,7 +6,14 @@ from pydantic import BaseModel, ValidationError, create_model
 
 from .utils import merge_query_dict, is_class_view
 from .exceptions import RequestValidationError
-from .fields import QueryInfo, HeaderInfo, CookieInfo, BodyInfo, PathInfo, ExclusiveInfo
+from ._fields import (
+    QueryInfo,
+    HeaderInfo,
+    CookieInfo,
+    BodyInfo,
+    PathInfo,
+    ExclusiveInfo,
+)
 
 HTTPHandler = TypeVar("HTTPHandler", bound=Callable)
 
@@ -21,6 +28,41 @@ def create_model_config(title: str = None, description: str = None):
                 schema["description"] = description
 
     return ExclusiveModelConfig
+
+
+def verify_params(
+    handler: Any, request: HttpRequest, may_path_params: Dict[str, Any]
+) -> Dict[str, Any]:
+    """
+    Verify the parameters, and convert the parameters to the corresponding type.
+    """
+    if is_class_view(handler):
+        return _verify_params(
+            getattr(
+                handler.view_class,
+                request.method.lower(),
+                handler.view_class.http_method_not_allowed,
+            ),
+            request,
+            may_path_params,
+        )
+    return _verify_params(handler, request, may_path_params)
+
+
+def parse_and_bound_params(handler: Any) -> None:
+    """
+    Get the parameters from the function signature and bind them to the properties of the function
+    """
+    if is_class_view(handler):
+        view_class = handler.view_class
+        for method in view_class.http_method_names:
+            if not hasattr(view_class, method):
+                continue
+            setattr(
+                view_class, method, _parse_and_bound_params(getattr(view_class, method))
+            )
+    else:
+        _parse_and_bound_params(handler)
 
 
 def _parse_and_bound_params(handler: HTTPHandler) -> HTTPHandler:
@@ -90,7 +132,7 @@ def _parse_and_bound_params(handler: HTTPHandler) -> HTTPHandler:
     return handler
 
 
-def _generate_parameters(
+def _verify_params(
     handler: HTTPHandler, request: HttpRequest, may_path_params: Dict[str, Any]
 ) -> Dict[str, Any]:
     parameters = getattr(handler, "__parameters__", None)
@@ -137,32 +179,3 @@ def _generate_parameters(
             kwargs[exclusive_models[_data.__class__]] = _data
 
     return kwargs
-
-
-def parse_and_bound_params(handler: Any) -> None:
-    if is_class_view(handler):
-        view_class = handler.view_class
-        for method in view_class.http_method_names:
-            if not hasattr(view_class, method):
-                continue
-            setattr(
-                view_class, method, _parse_and_bound_params(getattr(view_class, method))
-            )
-    else:
-        _parse_and_bound_params(handler)
-
-
-def generate_parameters(
-    handler: Any, request: HttpRequest, may_path_params: Dict[str, Any]
-) -> Dict[str, Any]:
-    if is_class_view(handler):
-        return _generate_parameters(
-            getattr(
-                handler.view_class,
-                request.method.lower(),
-                handler.view_class.http_method_not_allowed,
-            ),
-            request,
-            may_path_params,
-        )
-    return _generate_parameters(handler, request, may_path_params)
