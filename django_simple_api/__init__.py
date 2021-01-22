@@ -1,4 +1,4 @@
-from .field_functions import Path, Query, Header, Cookie, Body, Exclusive
+from .fields import Path, Query, Header, Cookie, Body, Exclusive
 
 __all__ = ["Path", "Query", "Header", "Cookie", "Body", "Exclusive"]
 
