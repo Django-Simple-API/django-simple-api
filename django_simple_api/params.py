@@ -6,7 +6,14 @@ from pydantic import BaseModel, ValidationError, create_model
 
 from .utils import merge_query_dict, is_class_view
 from .exceptions import RequestValidationError
-from ._fields import QueryInfo, HeaderInfo, CookieInfo, BodyInfo, PathInfo, ExclusiveInfo
+from ._fields import (
+    QueryInfo,
+    HeaderInfo,
+    CookieInfo,
+    BodyInfo,
+    PathInfo,
+    ExclusiveInfo,
+)
 
 HTTPHandler = TypeVar("HTTPHandler", bound=Callable)
 
