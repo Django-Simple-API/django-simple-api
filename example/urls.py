@@ -25,6 +25,8 @@ urlpatterns = [
     path("test-get-func/<name>", views.get_func),
     path("test-post-func/<name>", views.post_func),
     path("test-put-func/<id>", views.put_func),
+    path("test-delete-func/<id>", views.test_delete_func),
     path("test-query-page", views.query_page),
     path("test-query-page-by-exclusive", views.query_page_by_exclusive),
+
 ]

@@ -67,6 +67,21 @@ class TestFunctionView(TestCase):
         resp = self.client.post("/test-put-func/1")
         self.assertEqual(resp.status_code, 405)
 
+    def test_success_delete(self):
+        cookies = self.client.cookies
+        cookies["session_id"] = 2
+        resp = self.client.put("/test-delete-func/1")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content, b"12")  # default = "2"
+
+        resp = self.client.delete("/test-delete-func/2", HTTP_COOKIES="session_id=666")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content, b"23")
+
+    def test_failed_delete(self):
+        resp = self.client.get("/test-delete-func/1")
+        self.assertEqual(resp.status_code, 405)
+
 
 class TestExclusive(TestCase):
     def test_success_get(self):
@@ -85,3 +100,5 @@ class TestExclusive(TestCase):
             "/test-query-page-by-exclusive", data={"page-size": 20, "page-num": 3}
         )
         self.assertEqual(resp.content, b"40")
+
+

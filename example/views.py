@@ -33,6 +33,13 @@ def put_func(request, id: int = Path(1), name: str = Body("2")):
     return HttpResponse(str(id) + name)
 
 
+@allow_method('delete')
+def test_delete_func(request, id: int = Path(1), sessionid: str = Cookie("??")):
+    print(request.COOKIES.items())
+    print(request.session.get("session_id"))
+    return HttpResponse(str(id) + sessionid)
+
+
 @allow_method("get")
 def query_page(
     request,
@@ -50,3 +57,28 @@ class QueryPage(BaseModel):
 @allow_method("get")
 def query_page_by_exclusive(request, page: QueryPage = Exclusive("query")):
     return HttpResponse(page.size * (page.num - 1))
+
+
+
+def test_common_func_view(request):
+    id = request.GET.get("id", "")
+    name = request.POST.get("name", "")
+    return HttpResponse(id + name)
+
+
+def test_common_path_func_view(request, id):
+    name = request.GET.get("name", "")
+    return HttpResponse(id + name)
+
+
+class CommonClassView(View):
+    def get(self, request):
+        id = request.GET.get("id", "")
+        name = request.POST.get("name", "")
+        return HttpResponse(id + name)
+
+    def post(self, request, id):
+        name = request.GET.get("name", "")
+        return HttpResponse(id + name)
+
+
