@@ -22,8 +22,9 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("docs/", include("django_simple_api.urls")),
     path("just-test/<id>", views.JustTest.as_view()),
-
-    path("test-get-func/<name>", views.test_get_func),
-    path("test-post-func/<name>", views.test_post_func),
-    path("test-put-func/<id>", views.test_put_func),
+    path("test-get-func/<name>", views.get_func),
+    path("test-post-func/<name>", views.post_func),
+    path("test-put-func/<id>", views.put_func),
+    path("test-query-page", views.query_page),
+    path("test-query-page-by-exclusive", views.query_page_by_exclusive),
 ]
