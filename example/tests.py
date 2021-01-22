@@ -133,6 +133,3 @@ class TestCommonView(TestCase):
     def test_class_view_failed(self):
         resp = self.client.put("/test-common-class-view")
         self.assertEqual(resp.status_code, 405)
-
-
-

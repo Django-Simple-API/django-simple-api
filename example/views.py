@@ -33,7 +33,7 @@ def put_func(request, id: int = Path(1), name: str = Body("2")):
     return HttpResponse(str(id) + name)
 
 
-@allow_method('delete')
+@allow_method("delete")
 def test_delete_func(request, id: int = Path(...), session_id: str = Cookie(...)):
     return HttpResponse(str(id) + session_id)
 
@@ -76,5 +76,3 @@ class CommonClassView(View):
     def post(self, request):
         name = request.POST.get("name", "")
         return HttpResponse(name)
-
-
