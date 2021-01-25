@@ -35,7 +35,7 @@ def Path(
     **extra: Any,
 ) -> Any:
     """
-    Used to provide extra information about a field, either for the model schema or complex valiation. Some arguments
+    Used to provide extra information about a field, either for the model schema or complex validation. Some arguments
     apply only to number fields (``int``, ``float``, ``Decimal``) and some apply only to ``str``.
 
     :param default: since this is replacing the field’s default, its first argument is used
@@ -62,9 +62,9 @@ def Path(
       schema will have a ``maximum`` validation keyword
     :param max_length: only applies to strings, requires the field to have a maximum length. The
       schema will have a ``maxLength`` validation keyword
-    :param regex: only applies to strings, requires the field match agains a regular expression
+    :param regex: only applies to strings, requires the field match again a regular expression
       pattern string. The schema will have a ``pattern`` validation keyword
-    :param **extra: any additional keyword arguments will be added as is to the schema
+    :param extra: any additional keyword arguments will be added as is to the schema
     """
     if default is not Undefined and default_factory is not None:
         raise ValueError("cannot specify both default and default_factory")
@@ -111,7 +111,7 @@ def Query(
     **extra: Any,
 ) -> Any:
     """
-    Used to provide extra information about a field, either for the model schema or complex valiation. Some arguments
+    Used to provide extra information about a field, either for the model schema or complex validation. Some arguments
     apply only to number fields (``int``, ``float``, ``Decimal``) and some apply only to ``str``.
 
     :param default: since this is replacing the field’s default, its first argument is used
@@ -138,9 +138,9 @@ def Query(
       schema will have a ``maximum`` validation keyword
     :param max_length: only applies to strings, requires the field to have a maximum length. The
       schema will have a ``maxLength`` validation keyword
-    :param regex: only applies to strings, requires the field match agains a regular expression
+    :param regex: only applies to strings, requires the field match again a regular expression
       pattern string. The schema will have a ``pattern`` validation keyword
-    :param **extra: any additional keyword arguments will be added as is to the schema
+    :param extra: any additional keyword arguments will be added as is to the schema
     """
     if default is not Undefined and default_factory is not None:
         raise ValueError("cannot specify both default and default_factory")
@@ -187,7 +187,7 @@ def Header(
     **extra: Any,
 ) -> Any:
     """
-    Used to provide extra information about a field, either for the model schema or complex valiation. Some arguments
+    Used to provide extra information about a field, either for the model schema or complex validation. Some arguments
     apply only to number fields (``int``, ``float``, ``Decimal``) and some apply only to ``str``.
 
     :param default: since this is replacing the field’s default, its first argument is used
@@ -214,9 +214,9 @@ def Header(
       schema will have a ``maximum`` validation keyword
     :param max_length: only applies to strings, requires the field to have a maximum length. The
       schema will have a ``maxLength`` validation keyword
-    :param regex: only applies to strings, requires the field match agains a regular expression
+    :param regex: only applies to strings, requires the field match again a regular expression
       pattern string. The schema will have a ``pattern`` validation keyword
-    :param **extra: any additional keyword arguments will be added as is to the schema
+    :param extra: any additional keyword arguments will be added as is to the schema
     """
     if default is not Undefined and default_factory is not None:
         raise ValueError("cannot specify both default and default_factory")
@@ -263,7 +263,7 @@ def Cookie(
     **extra: Any,
 ) -> Any:
     """
-    Used to provide extra information about a field, either for the model schema or complex valiation. Some arguments
+    Used to provide extra information about a field, either for the model schema or complex validation. Some arguments
     apply only to number fields (``int``, ``float``, ``Decimal``) and some apply only to ``str``.
 
     :param default: since this is replacing the field’s default, its first argument is used
@@ -290,9 +290,9 @@ def Cookie(
       schema will have a ``maximum`` validation keyword
     :param max_length: only applies to strings, requires the field to have a maximum length. The
       schema will have a ``maxLength`` validation keyword
-    :param regex: only applies to strings, requires the field match agains a regular expression
+    :param regex: only applies to strings, requires the field match again a regular expression
       pattern string. The schema will have a ``pattern`` validation keyword
-    :param **extra: any additional keyword arguments will be added as is to the schema
+    :param extra: any additional keyword arguments will be added as is to the schema
     """
     if default is not Undefined and default_factory is not None:
         raise ValueError("cannot specify both default and default_factory")
@@ -339,7 +339,7 @@ def Body(
     **extra: Any,
 ) -> Any:
     """
-    Used to provide extra information about a field, either for the model schema or complex valiation. Some arguments
+    Used to provide extra information about a field, either for the model schema or complex validation. Some arguments
     apply only to number fields (``int``, ``float``, ``Decimal``) and some apply only to ``str``.
 
     :param default: since this is replacing the field’s default, its first argument is used
@@ -366,9 +366,9 @@ def Body(
       schema will have a ``maximum`` validation keyword
     :param max_length: only applies to strings, requires the field to have a maximum length. The
       schema will have a ``maxLength`` validation keyword
-    :param regex: only applies to strings, requires the field match agains a regular expression
+    :param regex: only applies to strings, requires the field match again a regular expression
       pattern string. The schema will have a ``pattern`` validation keyword
-    :param **extra: any additional keyword arguments will be added as is to the schema
+    :param extra: any additional keyword arguments will be added as is to the schema
     """
     if default is not Undefined and default_factory is not None:
         raise ValueError("cannot specify both default and default_factory")
