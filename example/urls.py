@@ -19,7 +19,6 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
     path("docs/", include("django_simple_api.urls")),
     path("just-test/<id>", views.JustTest.as_view()),
     # test function based views with method get, post, put, delete
