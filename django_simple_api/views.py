@@ -1,146 +1,147 @@
 import warnings
+import operator
+from typing import Any, Tuple, Dict
+from copy import deepcopy
+from functools import reduce
 
-from django.conf import settings
 from django.shortcuts import render
-from django.http.request import HttpRequest
 from django.http.response import JsonResponse
 
-from .utils import get_urls, is_class_view, parse_function_doc, parse_function_params
-from .decorators import allow_method
+from .typing import HttpRequest
+from .exceptions import RequestValidationError
+from .utils import get_all_urls, is_class_view, F
+from .schema import schema_parameter, schema_request_body, schema_response
+from .extras import merge_openapi_info
 
 
-@allow_method("get")
-def docs(request: HttpRequest):
-    theme_name = (
-        settings.SIMPLE_API_THEME if settings.SIMPLE_API_THEME else "swagger.html"
-    )
-    return render(request, theme_name, context={})
+def docs(request: HttpRequest, template_name: str = "swagger.html", **kwargs: Any):
+    return render(request, template_name, context={})
 
 
-@allow_method("get")
-def get_docs(request: HttpRequest):
-    # default_request_type = ["application/json", "multipart/form-data"]
-    openapi = {
-        "openapi": "3.0.0",
-        "info": {
-            "title": "Django Simple API",
-            "version": "1.0.0",
-            "description": "This is a simple API",
-        },
-        "servers": [{"description": "Server Host", "url": request.get_host()}],
-        "tags": [],
-        "paths": {
-            "/inventory": {
-                "get": {
-                    "tags": ["developers"],
-                    "summary": "searches inventory",
-                    "operationId": "searchInventory",
-                    "description": "By passing in the appropriate options, you can search for\navailable inventory in the system\n",
-                    "parameters": [
-                        {
-                            "in": "query",
-                            "name": "searchString",
-                            "description": "pass an optional search string for looking up inventory",
-                            "required": False,
-                            "schema": {"type": "string"},
-                        },
-                        {
-                            "in": "query",
-                            "name": "skip",
-                            "description": "number of records to skip for pagination",
-                            "schema": {
-                                "type": "integer",
-                                "format": "int32",
-                                "minimum": 0,
-                            },
-                        },
-                        {
-                            "in": "query",
-                            "name": "limit",
-                            "description": "maximum number of records to return",
-                            "schema": {
-                                "type": "integer",
-                                "format": "int32",
-                                "minimum": 0,
-                                "maximum": 50,
-                            },
-                        },
-                    ],
-                    "responses": {
-                        "200": {
-                            "description": "search results matching criteria",
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "type": "array",
-                                        "items": {
-                                            "$ref": "#/components/schemas/InventoryItem"
-                                        },
-                                    }
-                                }
-                            },
-                        },
-                        "400": {"description": "bad input parameter"},
-                    },
-                },
-                "post": {
-                    "summary": "adds an inventory item",
-                    "operationId": "addInventory",
-                    "description": "Adds an item to the system",
-                    "responses": {
-                        "201": {"description": "item created"},
-                        "400": {"description": "invalid input, object invalid"},
-                        "409": {"description": "an existing item already exists"},
-                    },
-                    "requestBody": {
-                        "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/InventoryItem"}
-                            }
-                        },
-                        "description": "Inventory item to add",
-                    },
-                },
+def _generate_method_docs(function) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    result: Dict[str, Any] = {}
+    definitions: Dict[str, Any] = {}
+
+    doc = function.__doc__
+    if isinstance(doc, str):
+        doc = doc.strip()
+        result.update(
+            {
+                "summary": doc.splitlines()[0],
+                "description": "\n".join(doc.splitlines()[1:]).strip(),
             }
-        },
+        )
+
+    # generate params schema
+    parameters = (
+        ["path", "query", "header", "cookie"]
+        | F(map, lambda key: (getattr(function, "__parameters__", {}).get(key), key))
+        | F(map, lambda args: schema_parameter(*args))
+        | F(reduce, operator.add)
+    )
+    result["parameters"] = parameters
+
+    # generate request body schema
+    request_body, _definitions = schema_request_body(
+        getattr(function, "__request_body__", None)
+    )
+    result["requestBody"] = request_body
+    definitions.update(_definitions)
+
+    # generate responses schema
+    __responses__ = getattr(function, "__responses__", {})
+    responses: Dict[int, Any] = {}
+    if parameters or request_body:
+        responses[422] = {
+            "content": {
+                "application/json": {"schema": RequestValidationError.schema()}
+            },
+            "description": "Failed to verify request parameters",
+        }
+
+    for status, info in __responses__.items():
+        _ = responses[int(status)] = dict(info)
+        if _.get("content") is not None:
+            _["content"], _definitions = schema_response(_["content"])
+            definitions.update(_definitions)
+
+    result["responses"] = responses
+
+    # merge user custom operation info
+    return (
+        merge_openapi_info(
+            result | F(lambda d: {k: v for k, v in d.items() if v}),
+            getattr(function, "__extra_docs__", {}),
+        ),
+        definitions,
+    )
+
+
+def _generate_path_docs(handler) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    result: Dict[str, Any] = {}
+    definitions: Dict[str, Any] = {}
+    if is_class_view(handler):
+        view_class = handler.view_class
+        for method in (
+            view_class.http_method_names
+            | F(filter, lambda method: hasattr(view_class, method))
+            | F(filter, lambda method: method not in ("options",))
+        ):
+            result[method], _definitions = _generate_method_docs(
+                getattr(view_class, method)
+            )
+            definitions.update(_definitions)
+    else:
+        if hasattr(handler, "__method__"):
+            result[handler.__method__.lower()], _definitions = _generate_method_docs(
+                handler
+            )
+            definitions.update(_definitions)
+        elif (
+            hasattr(handler, "__parameters__")
+            or hasattr(handler, "__request_body__")
+            or hasattr(handler, "__responses__")
+        ):
+            warnings.warn(
+                "You used the type identifier but did not declare the "
+                f"request method allowed by the function {handler.__qualname__}. We cannot "
+                "generate the OpenAPI document of this function for you!"
+            )
+    return result | F(lambda d: {k: v for k, v in d.items() if v}), definitions
+
+
+def get_docs(
+    request: HttpRequest, title: str, description: str, version: str, **kwargs: Any
+):
+    openapi_docs = {
+        "openapi": "3.0.0",
+        "info": {"title": title, "description": description, "version": version},
+        "servers": [
+            {
+                "url": request.build_absolute_uri("/"),
+                "description": "Current API Server Host",
+            },
+            {
+                "url": "{schema}://{address}/",
+                "description": "Custom API Server Host",
+                "variables": {
+                    "schema": {
+                        "default": request.scheme,
+                        "description": "http or https",
+                    },
+                    "address": {
+                        "default": request.get_host(),
+                        "description": "api server's host[:port]",
+                    },
+                },
+            },
+        ],
     }
-    for url_pattern, view in get_urls():
-        path_info = {}
-
-        # 忽略部分 url
-        if url_pattern in ["docs/", "docs/get_docs/"]:
-            continue
-
-        # 类视图
-        if is_class_view(view):
-            view_class = view.view_class
-            for method in view_class.http_method_names:
-                if method.upper() != "OPTIONS" and hasattr(view_class, method):
-                    handler = getattr(view_class, method)
-                    summary, description = parse_function_doc(handler)
-                    parameters, request_body = parse_function_params(handler)
-                    # todo 获取响应参数
-                    # responses = {}
-                    # 单个请求方法的文档
-                    path_info[method] = {
-                        "summary": summary,
-                        "description": description,
-                        "parameters": parameters,
-                        "request_body": request_body,
-                        # "responses": responses,
-                    }
-        # 函数视图
-        else:
-            request_method = getattr(view, "__method__", None)
-            if not request_method:
-                warnings.warn(
-                    f"`{view.__name__}` view function does not declare request method, "
-                    f"we cannot generate documentation for it!"
-                )
-            else:
-                pass
-
-        # 合并到 openapi
-        # openapi["paths"][url_pattern] = path_info
-
-    return JsonResponse(openapi, json_dumps_params={"ensure_ascii": False})
+    definitions = {}
+    paths = {}
+    for url_pattern, view in get_all_urls():
+        paths[url_pattern], _definitions = _generate_path_docs(view)
+        definitions.update(_definitions)
+    openapi_docs["paths"] = paths | F(lambda d: {k: v for k, v in d.items() if v})
+    openapi_docs["definitions"] = deepcopy(definitions)
+    return JsonResponse(openapi_docs, json_dumps_params={"ensure_ascii": False})
