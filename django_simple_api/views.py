@@ -118,16 +118,16 @@ def get_docs(request: HttpRequest):
                 if method.upper() != "OPTIONS" and hasattr(view_class, method):
                     handler = getattr(view_class, method)
                     summary, description = parse_function_doc(handler)
-                    parameters, request_body = parse_function_params(method, handler)
+                    parameters, request_body = parse_function_params(handler)
                     # todo 获取响应参数
-                    responses = {}
+                    # responses = {}
                     # 单个请求方法的文档
                     path_info[method] = {
                         "summary": summary,
                         "description": description,
                         "parameters": parameters,
                         "request_body": request_body,
-                        "responses": responses,
+                        # "responses": responses,
                     }
         # 函数视图
         else:
@@ -141,6 +141,6 @@ def get_docs(request: HttpRequest):
                 pass
 
         # 合并到 openapi
-        openapi["paths"][url_pattern] = path_info
+        # openapi["paths"][url_pattern] = path_info
 
     return JsonResponse(openapi, json_dumps_params={"ensure_ascii": False})

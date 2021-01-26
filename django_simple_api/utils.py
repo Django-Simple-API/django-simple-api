@@ -1,5 +1,5 @@
 import re
-from typing import Any, List, Union, Generator, Tuple, Callable
+from typing import Any, List, Union, Generator, Tuple, Callable, Dict
 
 from django.conf import settings
 from django.urls import URLPattern, URLResolver
@@ -67,26 +67,41 @@ def parse_function_doc(function: Callable) -> tuple:
     return summary, description
 
 
-def parse_function_params(method: str, function: Callable) -> Tuple[list, dict]:
+def parse_function_params(function: Callable) -> Tuple[List[dict], Dict[str, str]]:
     """
     Parse and return function params.
     """
     params = getattr(function, "__parameters__", None)
     body = getattr(function, "__request_body__", None)
-    params_info = []
-    body_info = {}
+    params_info: List[dict] = []
+    body_info: Dict[str, str] = {}
     if params:
         for typ, model in params.items():
             for name, field in model.__fields__.items():
                 param_info = {
                     "in": typ,
                     "name": name,
-                    "description": field.description if hasattr(field, "description") else "",
+                    "description": field.description
+                    if hasattr(field, "description")
+                    else "",
                     "required": field.required,
                     "schema": {"type": field.type_.__name__},
                 }
-                for item in ["alias", "default", "const", "gt", "ge", "lt", "le", "multiple_of", "min_items",
-                             "max_items", "min_length", "max_length", "regex"]:
+                for item in [
+                    "alias",
+                    "default",
+                    "const",
+                    "gt",
+                    "ge",
+                    "lt",
+                    "le",
+                    "multiple_of",
+                    "min_items",
+                    "max_items",
+                    "min_length",
+                    "max_length",
+                    "regex",
+                ]:
                     if hasattr(field, "item"):
                         param_info["schema"][item] = getattr(field, item, None)
                 params_info.append(param_info)
