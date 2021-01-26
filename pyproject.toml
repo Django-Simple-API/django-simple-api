@@ -1,6 +1,6 @@
 [tool.poetry]
 authors = ["abersheeran <me@abersheeran.com>"]
-description = ""
+description = "A non-intrusive component that can help you quickly create APIs."
 license = "MIT"
 name = "django-simple-api"
 readme = "README.md"
@@ -25,13 +25,9 @@ pydantic = "^1.7.3"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^20.8b1", allow-prereleases = true}
-mypy = "*"
 flake8 = "*"
+mypy = "*"
 pytest = "^5.4.3"
-
-[tool.dephell.main]
-from = {format = "poetry", path = "pyproject.toml"}
-to = {format = "setuppy", path = "setup.py"}
 
 [build-system]
 build-backend = "poetry.masonry.api"
