@@ -1,13 +1,28 @@
+from pydantic import BaseModel, Field
+
+from django.http import HttpRequest
 from django.views import View
 from django.http.response import HttpResponse
-from pydantic import BaseModel, Field
 
 from django_simple_api import Path, Query, Header, Cookie, Body, Exclusive
 from django_simple_api.decorators import allow_method
 
 
+class QueryPage(BaseModel):
+    size: int = Field(10, alias="page-size")
+    num: int = Field(1, alias="page-num")
+
+
 class JustTest(View):
-    def get(self, request, id: int = Path(...)):
+    def get(self,
+            request: HttpRequest,
+            id: int = Path(..., description='This is description of id.'),
+            one: str = Body(...),
+            two: str = Cookie(...),
+            three: str = Header(),
+            four: str = Body(...),
+            page: QueryPage = Exclusive("query")
+            ) -> HttpResponse:
         """
         This is summary.
 
@@ -15,8 +30,8 @@ class JustTest(View):
         """
         return HttpResponse(id)
 
-    def post(self, request, id: int = Path(...), name_id: int = Body(...)):
-        return HttpResponse(id + name_id)
+    def post(self, request, post_id: int = Path(...), name_id: int = Body(...)):
+        return HttpResponse(post_id + name_id)
 
 
 @allow_method("get")
@@ -62,12 +77,14 @@ def query_page_by_exclusive(request, page: QueryPage = Exclusive("query")):
     return HttpResponse(page.size * (page.num - 1))
 
 
+@allow_method("get")
 def test_common_func_view(request):
     id = request.GET.get("id", "")
     name = request.POST.get("name", "")
     return HttpResponse(id + name)
 
 
+@allow_method("get")
 def test_common_path_func_view(request, id):
     name = request.GET.get("name", "")
     return HttpResponse(id + name)
@@ -79,5 +96,13 @@ class CommonClassView(View):
         return HttpResponse(id)
 
     def post(self, request):
+        name = request.POST.get("name", "")
+        return HttpResponse(name)
+
+    def put(self, request):
+        name = request.POST.get("name", "")
+        return HttpResponse(name)
+
+    def delete(self, request):
         name = request.POST.get("name", "")
         return HttpResponse(name)

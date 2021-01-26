@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.http.request import HttpRequest
 from django.http.response import JsonResponse
 
-from .utils import get_urls, is_class_view
+from .utils import get_urls, is_class_view, parse_function_doc, parse_function_params
 from .decorators import allow_method
 
 
@@ -111,31 +111,25 @@ def get_docs(request: HttpRequest):
         if url_pattern in ["docs/", "docs/get_docs/"]:
             continue
 
+        # 类视图
         if is_class_view(view):
             view_class = view.view_class
             for method in view_class.http_method_names:
-                if hasattr(view_class, method):
+                if method.upper() != "OPTIONS" and hasattr(view_class, method):
                     handler = getattr(view_class, method)
-                    # todo 抽出来
-                    summary = (
-                        handler.__doc__.split("\n\n")[0].strip()
-                        if handler.__doc__ is not None
-                        else ""
-                    )
-                    description = (
-                        handler.__doc__.split("\n\n")[-1].strip()
-                        if handler.__doc__ is not None
-                        else ""
-                    )
-                    # todo 获取请求参数
+                    summary, description = parse_function_doc(handler)
+                    parameters, request_body = parse_function_params(method, handler)
                     # todo 获取响应参数
-                    # 单个请求方法
+                    responses = {}
+                    # 单个请求方法的文档
                     path_info[method] = {
                         "summary": summary,
                         "description": description,
-                        "parameters": [],
-                        "": {},
+                        "parameters": parameters,
+                        "request_body": request_body,
+                        "responses": responses,
                     }
+        # 函数视图
         else:
             request_method = getattr(view, "__method__", None)
             if not request_method:
@@ -147,6 +141,6 @@ def get_docs(request: HttpRequest):
                 pass
 
         # 合并到 openapi
-        # openapi["paths"][url_pattern] = path_info
+        openapi["paths"][url_pattern] = path_info
 
     return JsonResponse(openapi, json_dumps_params={"ensure_ascii": False})
