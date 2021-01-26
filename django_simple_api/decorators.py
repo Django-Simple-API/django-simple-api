@@ -12,16 +12,19 @@ if sys.version_info >= (3, 9):
 else:
     GenericType = (type(List[str]),)
 
+from django.views import View
 from pydantic import BaseModel, create_model
 from pydantic.utils import display_as_type
 
 T = TypeVar("T")
 
 
-def allow_method(method: str) -> Callable[[T], T]:
+def allow_request_method(method: str) -> Callable[[T], T]:
     """
     Declare the request method allowed by the view function.
     """
+    if method not in View.http_method_names:
+        raise ValueError(f"`method` must in {View.http_method_names}")
 
     def wrapper(view_func: T) -> T:
         if isclass(view_func):
@@ -71,16 +74,13 @@ def describe_response(
                 f"ParsingModel[{display_as_type(content)}]", __root__=(content, ...)
             )
 
-        responses[status] = {
-            k: v
-            for k, v in {
-                "description": description,
-                "content": real_content,
-                "headers": headers,
-                "links": links,
-            }.items()
-            if v
+        response = {
+            "description": description,
+            "content": real_content,
+            "headers": headers,
+            "links": links,
         }
+        responses[status] = {k: v for k, v in response.items() if v}
 
         return func
 

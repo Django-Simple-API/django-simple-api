@@ -13,13 +13,21 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path, include
 
 from . import views
 
 urlpatterns = [
-    path("docs/", include("django_simple_api.urls")),
+    path(
+        "docs/",
+        include("django_simple_api.urls"),
+        {
+            "template_name": "redoc.html",
+            "title": "Title",
+            "description": "description",
+            "version": "version",
+        },
+    ),
     path("just-test/<id>", views.JustTest.as_view()),
     # test function based views with method get, post, put, delete
     # test view injection parameters check Path, Query, Header, Cookie, Body
@@ -30,7 +38,7 @@ urlpatterns = [
     # test view injection parameters check Exclusive
     path("test-query-page", views.query_page),
     path("test-query-page-by-exclusive", views.query_page_by_exclusive),
-    # test common view without @allow_method and injection parameters
+    # test common view without @allow_request_method and injection parameters
     path("test-common-func-view", views.test_common_func_view),
     path("test-common-func-view/<id>", views.test_common_path_func_view),
     path("test-common-class-view", views.CommonClassView.as_view()),
