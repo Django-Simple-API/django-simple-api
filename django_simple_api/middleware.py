@@ -1,5 +1,4 @@
 import json
-
 from http import HTTPStatus
 from typing import Any, Callable, Dict, List, Optional
 

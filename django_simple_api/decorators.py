@@ -1,5 +1,4 @@
 import sys
-
 from http import HTTPStatus
 from typing import Any, Callable, Dict, List, Type, TypeVar, Union
 from inspect import isclass

@@ -1,6 +1,5 @@
 import operator
 import warnings
-
 from copy import deepcopy
 from typing import Any, Dict, Tuple
 from functools import reduce

@@ -1,5 +1,4 @@
 import re
-
 from typing import Any, Callable, Generator, List, Tuple, Union
 from functools import partial
 
