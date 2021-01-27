@@ -1,4 +1,5 @@
 import inspect
+
 from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
@@ -10,7 +11,6 @@ from .types import UploadFile
 def schema_parameter(
     m: Optional[Type[BaseModel]], position: str
 ) -> List[Dict[str, Any]]:
-
     if m is None:
         return []
 
@@ -43,9 +43,9 @@ def schema_request_body(body: Type[BaseModel] = None) -> Tuple[Optional[Dict], D
             content_type = "multipart/form-data"
 
     return {
-        "required": True,
-        "content": {content_type: {"schema": _schema}},
-    }, definitions
+               "required": True,
+               "content": {content_type: {"schema": _schema}},
+           }, definitions
 
 
 def schema_response(content: Union[Type[BaseModel], Dict]) -> Tuple[Dict, Dict]:

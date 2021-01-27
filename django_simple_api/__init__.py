@@ -1,7 +1,8 @@
-from .fields import Path, Query, Header, Cookie, Body, Exclusive
-from .decorators import allow_request_method, describe_response, describe_responses
-from .extras import describe_extra_docs
 from .types import UploadFile
+from .extras import describe_extra_docs
+from .fields import Body, Cookie, Exclusive, Header, Path, Query
+from .decorators import (allow_request_method, describe_response,
+                         describe_responses)
 
 __all__ = ["Path", "Query", "Header", "Cookie", "Body", "Exclusive"]
 __all__ += ["allow_request_method", "describe_response", "describe_responses"]

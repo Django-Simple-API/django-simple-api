@@ -1,5 +1,6 @@
 import json
-from typing import Dict, List, Any, Union
+
+from typing import Any, Dict, List, Union
 
 from pydantic import ValidationError
 from pydantic.json import pydantic_encoder

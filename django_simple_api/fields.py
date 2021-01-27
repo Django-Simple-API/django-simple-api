@@ -2,14 +2,8 @@ from typing import Any, Optional
 
 from pydantic.fields import NoArgAnyCallable, Undefined
 
-from ._fields import (
-    BodyInfo,
-    CookieInfo,
-    ExclusiveInfo,
-    HeaderInfo,
-    PathInfo,
-    QueryInfo,
-)
+from ._fields import (BodyInfo, CookieInfo, ExclusiveInfo, HeaderInfo,
+                      PathInfo, QueryInfo)
 
 __all__ = ["Path", "Query", "Header", "Cookie", "Body", "Exclusive"]
 

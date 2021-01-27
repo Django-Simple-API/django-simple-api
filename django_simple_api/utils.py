@@ -1,10 +1,11 @@
 import re
-from typing import Any, List, Union, Generator, Tuple, Callable
+
+from typing import Any, Callable, Generator, List, Tuple, Union
 from functools import partial
 
 from django.conf import settings
 from django.urls import URLPattern, URLResolver
-from django.urls.conf import RoutePattern, RegexPattern
+from django.urls.conf import RegexPattern, RoutePattern
 from django.http.request import QueryDict
 
 RE_PATH_PATTERN = re.compile(r"\(\?P<(?P<name>\w*)>.*?\)")
@@ -56,7 +57,7 @@ class F(partial):
     """
     Python Pipe. e.g.`range(10) | F(filter, lambda x: x % 2) | F(sum)`
 
-    WRANING: There will be a small performance loss when building a
+    WARNING: There will be a small performance loss when building a
     pipeline. Please do not use it in performance-sensitive locations.
     """
 

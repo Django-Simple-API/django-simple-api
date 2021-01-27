@@ -1,6 +1,7 @@
 import sys
+
 from http import HTTPStatus
-from typing import Type, TypeVar, Any, Callable, Union, Dict, List
+from typing import Any, Callable, Dict, List, Type, TypeVar, Union
 from inspect import isclass
 
 if sys.version_info >= (3, 9):
@@ -13,6 +14,7 @@ else:
     GenericType = (type(List[str]),)
 
 from django.views import View
+
 from pydantic import BaseModel, create_model
 from pydantic.utils import display_as_type
 
@@ -63,10 +65,10 @@ def describe_response(
             content is None
             or isinstance(content, dict)
             or (
-                not isinstance(content, GenericType)
-                and isclass(content)
-                and issubclass(content, BaseModel)
-            )
+            not isinstance(content, GenericType)
+            and isclass(content)
+            and issubclass(content, BaseModel)
+        )
         ):
             real_content = content
         else:

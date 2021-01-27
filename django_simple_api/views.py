@@ -1,20 +1,20 @@
-import warnings
 import operator
-from typing import Any, Tuple, Dict
+import warnings
+
 from copy import deepcopy
+from typing import Any, Dict, Tuple
 from functools import reduce
 
 from django.shortcuts import render
 from django.http.response import JsonResponse
 
-from .typing import HttpRequest
-from .exceptions import RequestValidationError
-from .utils import get_all_urls, is_class_view, F
+from .utils import F, get_all_urls, is_class_view
 from .schema import schema_parameter, schema_request_body, schema_response
 from .extras import merge_openapi_info
+from .exceptions import RequestValidationError
 
 
-def docs(request: HttpRequest, template_name: str = "swagger.html", **kwargs: Any):
+def docs(request, template_name: str = "swagger.html", **kwargs: Any):
     return render(request, template_name, context={})
 
 
