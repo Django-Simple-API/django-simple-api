@@ -4,8 +4,15 @@ from django.views import View
 from django.http import HttpRequest
 from django.http.response import HttpResponse
 
-from django_simple_api import (Body, Cookie, Exclusive, Header, Path, Query,
-                               allow_request_method)
+from django_simple_api import (
+    Body,
+    Cookie,
+    Exclusive,
+    Header,
+    Path,
+    Query,
+    allow_request_method,
+)
 
 
 class JustTest(View):

@@ -6,8 +6,14 @@ from pydantic import BaseModel, ValidationError, create_model
 from django.http.request import HttpRequest
 
 from .utils import is_class_view, merge_query_dict
-from ._fields import (BodyInfo, CookieInfo, ExclusiveInfo, HeaderInfo,
-                      PathInfo, QueryInfo)
+from ._fields import (
+    BodyInfo,
+    CookieInfo,
+    ExclusiveInfo,
+    HeaderInfo,
+    PathInfo,
+    QueryInfo,
+)
 from .exceptions import RequestValidationError
 
 HTTPHandler = TypeVar("HTTPHandler", bound=Callable)

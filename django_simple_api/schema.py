@@ -43,9 +43,9 @@ def schema_request_body(body: Type[BaseModel] = None) -> Tuple[Optional[Dict], D
             content_type = "multipart/form-data"
 
     return {
-               "required": True,
-               "content": {content_type: {"schema": _schema}},
-           }, definitions
+        "required": True,
+        "content": {content_type: {"schema": _schema}},
+    }, definitions
 
 
 def schema_response(content: Union[Type[BaseModel], Dict]) -> Tuple[Dict, Dict]:

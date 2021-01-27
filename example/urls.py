@@ -17,13 +17,16 @@ from django.urls import include, path
 
 urlpatterns = [
     # generate documentation
-    path("docs/", include("django_simple_api.urls"),
-         {
-             "template_name": "swagger.html",
-             "title": "Title",
-             "description": "description",
-             "version": "version",
-         }),
+    path(
+        "docs/",
+        include("django_simple_api.urls"),
+        {
+            "template_name": "swagger.html",
+            "title": "Title",
+            "description": "description",
+            "version": "version",
+        },
+    ),
     # unit test
-    path("test/", include("tests.urls"))
+    path("test/", include("tests.urls")),
 ]

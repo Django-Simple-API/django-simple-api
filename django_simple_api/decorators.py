@@ -65,10 +65,10 @@ def describe_response(
             content is None
             or isinstance(content, dict)
             or (
-            not isinstance(content, GenericType)
-            and isclass(content)
-            and issubclass(content, BaseModel)
-        )
+                not isinstance(content, GenericType)
+                and isclass(content)
+                and issubclass(content, BaseModel)
+            )
         ):
             real_content = content
         else:

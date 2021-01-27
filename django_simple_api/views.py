@@ -110,9 +110,7 @@ def _generate_path_docs(handler) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     return result | F(lambda d: {k: v for k, v in d.items() if v}), definitions
 
 
-def get_docs(
-    request: HttpRequest, title: str, description: str, version: str, **kwargs: Any
-):
+def get_docs(request, title: str, description: str, version: str, **kwargs: Any):
     openapi_docs = {
         "openapi": "3.0.0",
         "info": {"title": title, "description": description, "version": version},
