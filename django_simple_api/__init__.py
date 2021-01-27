@@ -1,5 +1,4 @@
-from .decorators import (allow_request_method, describe_response,
-                         describe_responses)
+from .decorators import allow_request_method, describe_response, describe_responses
 from .extras import describe_extra_docs
 from .fields import Body, Cookie, Exclusive, Header, Path, Query
 from .types import UploadFile
