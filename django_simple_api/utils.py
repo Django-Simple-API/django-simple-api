@@ -1,6 +1,5 @@
 import re
 from typing import Any, List, Union, Generator, Tuple, Callable
-from functools import partial
 
 from django.conf import settings
 from django.urls import URLPattern, URLResolver
@@ -50,18 +49,3 @@ def is_class_view(handler: Callable) -> bool:
     Judge handler is django.views.View subclass
     """
     return hasattr(handler, "view_class")
-
-
-class F(partial):
-    """
-    Python Pipe. e.g.`range(10) | F(filter, lambda x: x % 2) | F(sum)`
-
-    WRANING: There will be a small performance loss when building a
-    pipeline. Please do not use it in performance-sensitive locations.
-    """
-
-    def __ror__(self, other: Any) -> Any:
-        """
-        Implement pipeline operators `var | F(...)`
-        """
-        return self(other)

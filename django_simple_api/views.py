@@ -9,7 +9,7 @@ from django.http.response import JsonResponse
 
 from .typing import HttpRequest
 from .exceptions import RequestValidationError
-from .utils import get_all_urls, is_class_view, F
+from .utils import get_all_urls, is_class_view
 from .schema import schema_parameter, schema_request_body, schema_response
 from .extras import merge_openapi_info
 
@@ -33,11 +33,12 @@ def _generate_method_docs(function) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         )
 
     # generate params schema
-    parameters = (
-        ["path", "query", "header", "cookie"]
-        | F(map, lambda key: (getattr(function, "__parameters__", {}).get(key), key))
-        | F(map, lambda args: schema_parameter(*args))
-        | F(reduce, operator.add)
+    parameters = reduce(
+        operator.add,
+        [
+            schema_parameter(getattr(function, "__parameters__", {}).get(key), key)
+            for key in ["path", "query", "header", "cookie"]
+        ],
     )
     result["parameters"] = parameters
 
@@ -70,7 +71,7 @@ def _generate_method_docs(function) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     # merge user custom operation info
     return (
         merge_openapi_info(
-            result | F(lambda d: {k: v for k, v in d.items() if v}),
+            {k: v for k, v in result.items() if v},
             getattr(function, "__extra_docs__", {}),
         ),
         definitions,
@@ -82,10 +83,9 @@ def _generate_path_docs(handler) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     definitions: Dict[str, Any] = {}
     if is_class_view(handler):
         view_class = handler.view_class
-        for method in (
-            view_class.http_method_names
-            | F(filter, lambda method: hasattr(view_class, method))
-            | F(filter, lambda method: method not in ("options",))
+        for method in filter(
+            lambda method: hasattr(view_class, method) and method not in ("options",),
+            view_class.http_method_names,
         ):
             result[method], _definitions = _generate_method_docs(
                 getattr(view_class, method)
@@ -107,7 +107,7 @@ def _generate_path_docs(handler) -> Tuple[Dict[str, Any], Dict[str, Any]]:
                 f"request method allowed by the function {handler.__qualname__}. We cannot "
                 "generate the OpenAPI document of this function for you!"
             )
-    return result | F(lambda d: {k: v for k, v in d.items() if v}), definitions
+    return {k: v for k, v in result.items() if v}, definitions
 
 
 def get_docs(
@@ -142,6 +142,6 @@ def get_docs(
     for url_pattern, view in get_all_urls():
         paths[url_pattern], _definitions = _generate_path_docs(view)
         definitions.update(_definitions)
-    openapi_docs["paths"] = paths | F(lambda d: {k: v for k, v in d.items() if v})
+    openapi_docs["paths"] = {k: v for k, v in paths.items() if v}
     openapi_docs["definitions"] = deepcopy(definitions)
     return JsonResponse(openapi_docs, json_dumps_params={"ensure_ascii": False})
