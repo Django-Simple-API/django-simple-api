@@ -3,15 +3,12 @@ from http import HTTPStatus
 from typing import Any, Callable, Dict, List, Optional
 
 from django.http.request import HttpRequest
-from django.http.response import (
-    HttpResponse,
-    HttpResponseBadRequest,
-    HttpResponseNotAllowed,
-)
+from django.http.response import (HttpResponse, HttpResponseBadRequest,
+                                  HttpResponseNotAllowed)
 
-from .utils import is_class_view, merge_query_dict
-from .params import verify_params
 from .exceptions import RequestValidationError
+from .params import verify_params
+from .utils import is_class_view, merge_query_dict
 
 
 class SimpleApiMiddleware:

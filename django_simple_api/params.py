@@ -1,20 +1,13 @@
-from typing import Any, Callable, Dict, List, TypeVar
 from inspect import isclass, signature
-
-from pydantic import BaseModel, ValidationError, create_model
+from typing import Any, Callable, Dict, List, TypeVar
 
 from django.http.request import HttpRequest
+from pydantic import BaseModel, ValidationError, create_model
 
-from .utils import is_class_view, merge_query_dict
-from ._fields import (
-    BodyInfo,
-    CookieInfo,
-    ExclusiveInfo,
-    HeaderInfo,
-    PathInfo,
-    QueryInfo,
-)
+from ._fields import (BodyInfo, CookieInfo, ExclusiveInfo, HeaderInfo,
+                      PathInfo, QueryInfo)
 from .exceptions import RequestValidationError
+from .utils import is_class_view, merge_query_dict
 
 HTTPHandler = TypeVar("HTTPHandler", bound=Callable)
 
