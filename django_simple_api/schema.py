@@ -10,7 +10,6 @@ from .types import UploadFile
 def schema_parameter(
     m: Optional[Type[BaseModel]], position: str
 ) -> List[Dict[str, Any]]:
-
     if m is None:
         return []
 

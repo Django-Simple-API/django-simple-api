@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
-from .utils import get_all_urls
 from .params import parse_and_bound_params
+from .utils import get_all_urls
 
 
 class DjangoSimpleAPIConfig(AppConfig):

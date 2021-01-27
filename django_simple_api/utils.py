@@ -1,10 +1,10 @@
 import re
-from typing import Any, List, Union, Generator, Tuple, Callable
+from typing import Any, Callable, Generator, List, Tuple, Union
 
 from django.conf import settings
-from django.urls import URLPattern, URLResolver
-from django.urls.conf import RoutePattern, RegexPattern
 from django.http.request import QueryDict
+from django.urls import URLPattern, URLResolver
+from django.urls.conf import RegexPattern, RoutePattern
 
 RE_PATH_PATTERN = re.compile(r"\(\?P<(?P<name>\w*)>.*?\)")
 PATH_PATTERN = re.compile(r"<(.*?:)?(?P<name>\w*)>")

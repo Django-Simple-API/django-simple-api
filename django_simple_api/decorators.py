@@ -1,7 +1,11 @@
 import sys
 from http import HTTPStatus
-from typing import Type, TypeVar, Any, Callable, Union, Dict, List
 from inspect import isclass
+from typing import Any, Callable, Dict, List, Type, TypeVar, Union
+
+from django.views import View
+from pydantic import BaseModel, create_model
+from pydantic.utils import display_as_type
 
 if sys.version_info >= (3, 9):
     # https://www.python.org/dev/peps/pep-0585/
@@ -11,10 +15,6 @@ if sys.version_info >= (3, 9):
     GenericType = (GenericAlias, type(List[str]))
 else:
     GenericType = (type(List[str]),)
-
-from django.views import View
-from pydantic import BaseModel, create_model
-from pydantic.utils import display_as_type
 
 T = TypeVar("T")
 

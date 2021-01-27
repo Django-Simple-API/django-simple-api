@@ -2,7 +2,7 @@ import pytest
 from django.http.request import QueryDict
 from django.urls import path, re_path
 
-from django_simple_api.utils import merge_query_dict, _reformat_pattern
+from django_simple_api.utils import _reformat_pattern, merge_query_dict
 
 
 @pytest.mark.parametrize("query_dict,result", [(QueryDict(mutable=True), {})])

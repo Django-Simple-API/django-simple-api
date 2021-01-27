@@ -1,4 +1,4 @@
-from typing import Dict, Any, Sequence, TypeVar, Callable
+from typing import Any, Callable, Dict, Sequence, TypeVar
 
 from .utils import is_class_view
 

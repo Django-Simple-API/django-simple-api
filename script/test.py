@@ -1,14 +1,14 @@
 import os
-import sys
-import time
 import signal
 import subprocess
+import sys
+import time
 
 
 def execute(*commands):
     process = subprocess.Popen(" ".join(commands), cwd=os.getcwd(), shell=True)
 
-    def sigterm_handler(signo, frame):
+    def sigterm_handler(sign, frame):
         process.terminate()
         process.wait()
 

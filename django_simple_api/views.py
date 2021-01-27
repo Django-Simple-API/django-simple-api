@@ -1,20 +1,19 @@
-import warnings
 import operator
-from typing import Any, Tuple, Dict
+import warnings
 from copy import deepcopy
 from functools import reduce
+from typing import Any, Dict, Tuple
 
-from django.shortcuts import render
 from django.http.response import JsonResponse
+from django.shortcuts import render
 
-from .typing import HttpRequest
 from .exceptions import RequestValidationError
-from .utils import get_all_urls, is_class_view
-from .schema import schema_parameter, schema_request_body, schema_response
 from .extras import merge_openapi_info
+from .schema import schema_parameter, schema_request_body, schema_response
+from .utils import get_all_urls, is_class_view
 
 
-def docs(request: HttpRequest, template_name: str = "swagger.html", **kwargs: Any):
+def docs(request, template_name: str = "swagger.html", **kwargs: Any):
     return render(request, template_name, context={})
 
 
@@ -110,9 +109,7 @@ def _generate_path_docs(handler) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     return {k: v for k, v in result.items() if v}, definitions
 
 
-def get_docs(
-    request: HttpRequest, title: str, description: str, version: str, **kwargs: Any
-):
+def get_docs(request, title: str, description: str, version: str, **kwargs: Any):
     openapi_docs = {
         "openapi": "3.0.0",
         "info": {"title": title, "description": description, "version": version},
