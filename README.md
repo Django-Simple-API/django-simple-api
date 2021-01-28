@@ -32,7 +32,7 @@ MIDDLEWARE = [
 
 ⚠️ We support both `view-function` and `class-view` at the same time for all functions. If there is no special description in the document, it means that it is applicable to both views. Where special support is needed, we will indicate how to do it in the document.
 
-### Parameter declaration and verification
+###Parameter declaration and verification
 
 Simple API use `pydantic` to declare parameters and parameter verification.
 
@@ -195,10 +195,64 @@ And there are more attributes applied to `str` or `list` type, you can refer to 
 | regex          | only applies to strings, requires the field match again a regular expression pattern string. The schema will have a ``pattern`` validation keyword|
 | extra          | any additional keyword arguments will be added as is to the schema|
 
-When you finish the above tutorial, you can already declare parameters well. Then, if you have registered the `SimpleApiMiddleware` middleware, then all parameters will be automatically verified, and the detailed information of these parameters will be displayed in the interface document. The following will teach you how to generate the interface document.
+When you finish the above tutorial, you can already declare parameters well. If you have registered the `SimpleApiMiddleware` middleware, then all parameters will be automatically verified, and the detailed information of these parameters will be displayed in the interface document. The following will teach you how to generate the interface document.
 
 
 ### Generate documentation
+If you want to automatically generate interface documentation, you must add the url of Simple API to your url.py like this:
+```python
+# url.py
+from django.urls import include, path
+from django.conf import settings
+
+
+# Your urls
+urlpatterns = [
+    ...
+]
+
+# Simple API urls, should only run in a test environment.
+if settings.DEBUG:
+    urlpatterns += [
+        # generate documentation
+        path(
+            "docs/",
+            include("django_simple_api.urls"),
+            {
+                "template_name": "swagger.html",
+                "title": "Django Simple API",
+                "description": "This is description of your interface document.",
+                "version": "0.1.0",
+            },
+        ),
+    ]
+```
+
+In the above example, you can modify the `template_name` to change the UI theme of the interface document, We currently have two UI themes: `swagger.html` and `redoc.html`. 
+
+And then you can modify `title`、`description` and `version` to describe your interface documentation.
+
+If you are using `class-viev`, you can now generate documentation. Start your service, if your service is running locally, you can visit http://127.0.0.1:8000/docs/ to view your documentation.
+
+But if you are using `view-function`, you must declare the request method supported by the view function:
+
+```python
+# views.py
+from django_simple_api import allow_request_method
+
+@allow_request_method("get")
+def just_test(request, id: int = Query(...)):
+    return HttpResponse(id)
+```
+
+`allow_request_method` can only declare one request method, and it must be in `['get', 'post', 'put', 'patch', 'delete', 'head', 'trace']`, we do not support the behavior of using multiple request methods in a `view-function`, which will cause trouble for generating documentation.
+
+You can also not use `allow_request_method`, this will not bring negative effects, but it will not generate documentation.
+We will use `warning.warn()` to remind you that this is not a problem, just to prevent you from forgetting to use `allow_request_method`.
+
+
+#### To be continue ...
+
 Suppose you want to use the `GET` method and accept an argument, you can do this
 ```python
 from django_simple_api import Query, allow_request_method
