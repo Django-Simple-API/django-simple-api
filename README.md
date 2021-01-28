@@ -56,7 +56,7 @@ Simple API has a total of 6 fields, corresponding to the parameters in different
 | Body      | Indicates that this parameter is in the request body, and the value can only be obtained in a non-GET request.|
 | Cookie    | Indicates that this parameter is in Cookie.|
 | Header    | Indicates that this parameter is in Header.|
-| Exclusive | This is a special field, its parameter type should be `pydantic.Model`, it will get all the parameters required by `Model` from the location specified by `name`.|
+| Exclusive | This is a special field, its parameter annotation should be subclass of `pydantic.BaseModel`, it will get all the parameters from the location specified by `Exclusive`.
 
 For example:
 
