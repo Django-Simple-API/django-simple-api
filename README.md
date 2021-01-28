@@ -32,7 +32,7 @@ MIDDLEWARE = [
 
 ⚠️ We support both `view-function` and `class-view` at the same time for all functions. If there is no special description in the document, it means that it is applicable to both views. Where special support is needed, we will indicate how to do it in the document.
 
-###Parameter declaration and verification
+### Parameter declaration and verification
 
 Simple API use `pydantic` to declare parameters and parameter verification.
 
