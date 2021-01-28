@@ -245,7 +245,10 @@ def just_test(request, id: int = Query(...)):
     return HttpResponse(id)
 ```
 
-`allow_request_method` can only declare one request method, and it must be in `['get', 'post', 'put', 'patch', 'delete', 'head', 'trace']`, we do not support the behavior of using multiple request methods in a `view-function`, which will cause trouble for generating documentation.
+`allow_request_method` can only declare one request method, and it must be in `['get', 'post', 'put', 'patch', 'delete', 'head', 'trace']`. 
+We do not support the behavior of using multiple request methods in a `view-function`, which will cause trouble for generating documentation.
+
+Note that if you use `@allow_request_method("get")` to declare a request method, you will not be able to use request methods other than `get`, otherwise it will return `405 Method Not Allow`.
 
 You can also not use `allow_request_method`, this will not bring negative effects, but it will not generate documentation.
 We will use `warning.warn()` to remind you that this is not a problem, just to prevent you from forgetting to use `allow_request_method`.
