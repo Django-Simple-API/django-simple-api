@@ -29,7 +29,11 @@ MIDDLEWARE = [
 ```
 
 ## Usage
+
+⚠️ We support both view functions and class views at the same time for all functions. If there is no special description in the document, it means that it is applicable to both views. Where special support is needed, we will indicate how to do it in the document.
+
 ### Parameter declaration and verification
+
 Simple API use `pydantic` to declare parameters and parameter verification.
 
 You can declare request parameters like the following example:
