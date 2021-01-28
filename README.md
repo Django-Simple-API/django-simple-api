@@ -232,7 +232,7 @@ In the above example, you can modify the `template_name` to change the UI theme 
 
 And then you can modify `title`、`description` and `version` to describe your interface documentation.
 
-If you are using `class-viev`, you can now generate documentation. Start your service, if your service is running locally, you can visit http://127.0.0.1:8000/docs/ to view your documentation.
+If you are using `class-view`, you can now generate documentation. Start your service, if your service is running locally, you can visit http://127.0.0.1:8000/docs/ to view your documentation.
 
 But if you are using `view-function`, you must declare the request method supported by the view function:
 
