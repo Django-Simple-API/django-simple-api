@@ -1,6 +1,7 @@
 from django.http import HttpRequest
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, JsonResponse
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 from pydantic import BaseModel, Field
 
 from django_simple_api import (
@@ -36,6 +37,7 @@ def get_func(request, name: str = Path(...), name_id: str = Query(...)):
     return HttpResponse(name + name_id)
 
 
+@csrf_exempt
 @allow_request_method("post")
 def post_func(
     request, name: str = Path(...), token: str = Header(..., alias="Authorization")
@@ -43,6 +45,7 @@ def post_func(
     return HttpResponse(name + token)
 
 
+@csrf_exempt
 @allow_request_method("put")
 def put_func(request, id: int = Path(1), name: str = Body("2")):
     assert isinstance(id, int), "params type error"
@@ -93,3 +96,14 @@ class CommonClassView(View):
     def post(self, request):
         name = request.POST.get("name", "")
         return HttpResponse(name)
+
+
+@allow_request_method("get")
+def get_user(request, user_name: str = Query(...)):
+    return JsonResponse({"name": user_name})
+
+
+@csrf_exempt
+@allow_request_method("post")
+def add(request, first_num: int = Body(1), second_num: int = Body(2)):
+    return JsonResponse({"result": first_num + second_num})
