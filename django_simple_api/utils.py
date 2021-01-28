@@ -41,7 +41,14 @@ def get_all_urls() -> Generator[Tuple[str, Any], None, None]:
 
 
 def merge_query_dict(query_dict: QueryDict) -> dict:
-    return {k: v if len(v) > 1 else v[0] for k, v in query_dict.items() if len(v) > 0}
+    d = {}
+    for k in query_dict.keys():
+        v = query_dict.getlist(k)
+        if len(v) > 1:
+            d[k] = v
+        elif len(v) > 0:
+            d[k] = v[0]
+    return d
 
 
 def is_class_view(handler: Callable) -> bool:
