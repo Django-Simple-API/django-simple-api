@@ -276,34 +276,3 @@ urlpatterns = [
 The path parameters `id` will be passed into the view by field Path,and you'll see a lot of descriptions in the API documentation
 
 ![](docs/images/show_descriptions.png)
-
-#### All fields that can be injected into a function
-| Field name| Explain|
-| ---       | ---    |
-| Query     | |
-| Body      | |
-| Path      | |
-| Cookie    | |
-| Header    | |
-| Exclusive | |
-
-#### Field argument explain
-| Name           | Explain |
-| ---            | ---     |
-| default        | since this is replacing the field’s default, its first argument is used to set the default, use ellipsis (``...``) to indicate the field is required|
-| default_factory| callable that will be called when a default value is needed for this field. If both `default` and `default_factory` are set, an error is raised.|
-| alias          | the public name of the field|
-| title          | can be any string, used in the schema|
-| description    | can be any string, used in the schema|
-| const          | this field is required and *must* take it's default value|
-| gt             | only applies to numbers, requires the field to be "greater than". The schema will have an ``exclusiveMinimum`` validation keyword|
-| ge             | only applies to numbers, requires the field to be "greater than or equal to". The schema will have a ``minimum`` validation keyword|
-| lt             | only applies to numbers, requires the field to be "less than". The schema will have an ``exclusiveMaximum`` validation keyword|
-| le             | only applies to numbers, requires the field to be "less than or equal to". The schema will have a ``maximum`` validation keyword|
-| multiple_of    | only applies to numbers, requires the field to be "a multiple of". The schema will have a ``multipleOf`` validation keyword|
-| min_items      | only applies to list or tuple and set, requires the field to have a minimum length.|
-| max_items      | only applies to list or tuple and set, requires the field to have a maximum length.|
-| min_length     | only applies to strings, requires the field to have a minimum length. The schema will have a ``maximum`` validation keyword|
-| max_length     | only applies to strings, requires the field to have a maximum length. The schema will have a ``maxLength`` validation keyword|
-| regex          | only applies to strings, requires the field match again a regular expression pattern string. The schema will have a ``pattern`` validation keyword|
-| extra          | any additional keyword arguments will be added as is to the schema|
