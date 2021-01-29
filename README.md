@@ -250,8 +250,8 @@ We do not support the behavior of using multiple request methods in a `view-func
 
 Note that if you use `@allow_request_method("get")` to declare a request method, you will not be able to use request methods other than `get`, otherwise it will return `405 Method Not Allow`.
 
-You can also not use `allow_request_method`, this will not bring negative effects, but it will not generate documentation.
-We will use `warning.warn()` to remind you, but this is not a problem, just to prevent you from forgetting to use it.
+You can also not use `allow_request_method`, this will not have any negative effects, but it will not generate documentation.
+We will use `warning.warn()` to remind you, this is not a problem, just to prevent you from forgetting to use it.
 
 
 #### To be continue ...
