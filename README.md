@@ -75,22 +75,22 @@ class ArticleForm(BaseModel):
 class JustTest(View):
     # The parameter names used in the above examples are for demonstration only.
     def post(self, request,
-        param1: int = Query(...),
-        param2: int = Query(...),
-        param3: int = Path(...),
-        # param4: str = Body(...),
-        userid: int = Cookie(..., alias="uid"),
-        csrf_token: str = Header(..., alias="X-CSRF-TOKEN"),
-
-        # Simple API will get the `article_title` `article_content` parameter from the request body and create an object `article`
-        article: ArticleForm = Exclusive("body"),
+            param1: int = Query(...),
+            param2: int = Query(...),
+            param3: int = Path(...),
+            # param4: str = Body(...),
+            userid: int = Cookie(..., alias="uid"),
+            csrf_token: str = Header(..., alias="X-CSRF-TOKEN"),
+    
+            # Simple API will get the `article_title` `article_content` parameter from the request body and create an object `article`
+            article: ArticleForm = Exclusive("body"),
         ):
 
-        # You can get the parameters like this
+        # You can get the parameters like this:
         title = article.article_title
         content = article.article_content
 
-        # Or directly convert to a dictionary
+        # Or directly convert to a dictionary:
         d = article.dict()  # {"article_title": ..., "article_content": ...}
         return HttpResponse(d)
 ```
@@ -251,7 +251,7 @@ We do not support the behavior of using multiple request methods in a `view-func
 Note that if you use `@allow_request_method("get")` to declare a request method, you will not be able to use request methods other than `get`, otherwise it will return `405 Method Not Allow`.
 
 You can also not use `allow_request_method`, this will not bring negative effects, but it will not generate documentation.
-We will use `warning.warn()` to remind you that this is not a problem, just to prevent you from forgetting to use `allow_request_method`.
+We will use `warning.warn()` to remind you that this is not a problem, just to prevent you from forgetting to use it.
 
 
 #### To be continue ...
