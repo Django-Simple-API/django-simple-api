@@ -17,4 +17,7 @@ urlpatterns = [
     path("test-common-func-view", views.test_common_func_view),
     path("test-common-func-view/<id>", views.test_common_path_func_view),
     path("test-common-class-view", views.CommonClassView.as_view()),
+    # test the view written to the document
+    path("get-user/", views.get_user),
+    path("add/", views.add),
 ]
