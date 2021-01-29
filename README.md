@@ -253,6 +253,14 @@ Note that if you use `@allow_request_method("get")` to declare a request method,
 You can also not use `allow_request_method`, this will not have any negative effects, but it will not generate documentation.
 We will use `warning.warn()` to remind you, this is not a problem, just to prevent you from forgetting to use it.
 
+Now, the view function can also generate documents, you can continue to visit your server to view the effect.
+
+#### Improve documentation information
+##### function doc ...
+##### responses ...
+
+
+### Extensions
 
 #### To be continue ...
 
