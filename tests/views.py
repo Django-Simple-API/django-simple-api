@@ -1,7 +1,6 @@
 from django.http import HttpRequest
 from django.http.response import HttpResponse
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 from pydantic import BaseModel, Field
 
 from django_simple_api import (
