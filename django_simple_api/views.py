@@ -23,13 +23,8 @@ def _generate_method_docs(function) -> Tuple[Dict[str, Any], Dict[str, Any]]:
 
     doc = function.__doc__
     if isinstance(doc, str):
-        doc = doc.strip()
-        result.update(
-            {
-                "summary": doc.splitlines()[0],
-                "description": "\n".join(doc.splitlines()[1:]).strip(),
-            }
-        )
+        clean_doc = "\n".join(i.strip() for i in doc.strip().splitlines())
+        result.update(dict(zip(("summary", "description"), clean_doc.split("\n\n", 1))))
 
     # generate params schema
     parameters = reduce(
