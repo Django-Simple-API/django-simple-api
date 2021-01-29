@@ -1,5 +1,5 @@
 from django.http import HttpRequest
-from django.http.response import HttpResponse, JsonResponse
+from django.http.response import HttpResponse
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from pydantic import BaseModel, Field
@@ -96,14 +96,3 @@ class CommonClassView(View):
     def post(self, request):
         name = request.POST.get("name", "")
         return HttpResponse(name)
-
-
-@allow_request_method("get")
-def get_user(request, user_name: str = Query(...)):
-    return JsonResponse({"name": user_name})
-
-
-@csrf_exempt
-@allow_request_method("post")
-def add(request, first_num: int = Body(1), second_num: int = Body(2)):
-    return JsonResponse({"result": first_num + second_num})
