@@ -156,9 +156,7 @@ def _verify_params(
                 )
 
             if "header" in parameters:
-                data.append(
-                    parameters["header"].parse_obj(merge_query_dict(request.headers))
-                )
+                data.append(parameters["header"].parse_obj(request.headers))
 
             if "cookie" in parameters:
                 data.append(parameters["cookie"].parse_obj(request.COOKIES))
