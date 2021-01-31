@@ -10,6 +10,12 @@ Download and install from github
 pip install git+https://github.com/abersheeran/django-simple-api.git@setup.py
 ```
 
+Or from coding mirror in China
+
+```
+pip install git+https://e.coding.net/aber/github/django-simple-api.git@setup.py
+```
+
 Add django-simple-api to your `INSTALLED_APPS` in settings:
 
 ```python
@@ -46,7 +52,7 @@ from django.http.response import HttpResponse
 from django_simple_api import Query
 
 class JustTest(View):
-    def get(self, request, id: int = Query(...)):  
+    def get(self, request, id: int = Query(...)):
         return HttpResponse(id)
 ```
 
@@ -81,7 +87,7 @@ class JustTest(View):
             # param4: str = Body(...),
             userid: int = Cookie(..., alias="uid"),
             csrf_token: str = Header(..., alias="X-CSRF-TOKEN"),
-    
+
             # Simple API will get the `article_title` `article_content` parameter from the request body and create an object `article`
             article: ArticleForm = Exclusive("body"),
         ):
@@ -104,8 +110,8 @@ As you can see in the above example, Simple API also has the function of type co
 ```python
 class JustTest(View):
     def get(self, request, last_time: datetime.date = Query(...)):
-        print(last_time, type(last_time)) 
-        # 2008-08-08 <class 'datetime.date'> 
+        print(last_time, type(last_time))
+        # 2008-08-08 <class 'datetime.date'>
         return HttpResponse(last_time)
 ```
 
@@ -127,10 +133,10 @@ In addition, you can use default parameters like this:
 
 ```python
 class JustTest(View):
-    def get(self, request, id: int = Query(10)):  
+    def get(self, request, id: int = Query(10)):
         return HttpResponse(id)
     # Or
-    def get(self, request, id: int = Query(None)):  
+    def get(self, request, id: int = Query(None)):
         return HttpResponse(id)
 ```
 
@@ -141,7 +147,7 @@ def func():
     return 1000
 
 class JustTest(View):
-    def get(self, request, id: int = Query(default_factory=func)): 
+    def get(self, request, id: int = Query(default_factory=func)):
         print(id)  # 1000
         return HttpResponse(id)
 ```
@@ -160,9 +166,9 @@ class JustTest(View):
     def get(self, request, param: int = Query(10, const=True)):
         print(param, type(param))
         return HttpResponse(param)
-    
+
     # If your parameter is of numeric type , you can use `ge`、`gt`、`le`、`lt`、`multipleOf` and other attributes
-    def get(self, request, 
+    def get(self, request,
             param1: int = Query(..., gt=10),  # must be > 10
             param2: int = Query(..., ge=10),  # must be >= 10
             param3: int = Query(..., lt=10),  # must be < 10
@@ -228,7 +234,7 @@ if settings.DEBUG:
     ]
 ```
 
-In the above example, you can modify the `template_name` to change the UI theme of the interface document, We currently have two UI themes: `swagger.html` and `redoc.html`. 
+In the above example, you can modify the `template_name` to change the UI theme of the interface document, We currently have two UI themes: `swagger.html` and `redoc.html`.
 
 And then you can modify `title`、`description` and `version` to describe your interface documentation.
 
@@ -245,7 +251,7 @@ def just_test(request, id: int = Query(...)):
     return HttpResponse(id)
 ```
 
-`allow_request_method` can only declare one request method, and it must be in `['get', 'post', 'put', 'patch', 'delete', 'head', 'trace']`. 
+`allow_request_method` can only declare one request method, and it must be in `['get', 'post', 'put', 'patch', 'delete', 'head', 'trace']`.
 We do not support the behavior of using multiple request methods in a `view-function`, which will cause trouble for generating documentation.
 
 Note that if you use `@allow_request_method("get")` to declare a request method, you will not be able to use request methods other than `get`, otherwise it will return `405 Method Not Allow`.
