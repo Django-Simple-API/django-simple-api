@@ -1,4 +1,6 @@
-from typing import Any, Callable, Dict, Sequence, TypeVar
+from typing import Any, Callable, Dict, Sequence, TypeVar, List, Union
+
+from django.urls import URLPattern, URLResolver
 
 from .utils import is_class_view
 
@@ -40,3 +42,26 @@ def describe_extra_docs(handler: T, info: Dict[str, Any]) -> T:
     else:
         setattr(handler, "__extra_docs__", __extra_docs__)
     return handler
+
+
+def add_tag_to_view(handler, tags):
+    describe_extra_docs(handler, {"tags": list(tags)})
+
+
+def add_tag_urlpatterns(urlpatterns: List[Union[URLPattern, URLResolver]], tags):
+    for item in urlpatterns:
+        if isinstance(item, URLPattern):
+            add_tag_to_view(item.callback, tags)
+        else:
+            add_tag_urlpatterns(item.url_patterns, tags)
+
+
+def add_tags(*args: str) -> Callable:
+    def wrapper(obj: T) -> T:
+        if isinstance(obj, tuple):
+            urlpatterns = getattr(obj[0], "urlpatterns", [])
+            add_tag_urlpatterns(urlpatterns, args)
+        else:
+            add_tag_to_view(obj, args)
+        return obj
+    return wrapper
