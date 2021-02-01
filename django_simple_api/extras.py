@@ -44,37 +44,40 @@ def describe_extra_docs(handler: T, info: Dict[str, Any]) -> T:
     return handler
 
 
-def add_tag_to_view(handler: Any, tags: Union[list, tuple]) -> None:
+def _mark_tags_for_view(handler: Any, tags: Union[list, tuple]) -> None:
     describe_extra_docs(handler, {"tags": tags})
 
 
-def add_tag_urlpatterns(
+def mark_tags_for_urlpatterns(
     urlpatterns: List[Union[URLPattern, URLResolver]], tags: Union[list, tuple]
 ) -> None:
     for item in urlpatterns:
         if isinstance(item, URLPattern):
-            add_tag_to_view(item.callback, tags)
+            _mark_tags_for_view(item.callback, tags)
         else:
-            add_tag_urlpatterns(item.url_patterns, tags)
+            mark_tags_for_urlpatterns(item.url_patterns, tags)
 
 
-def add_tags_1(*tags: str) -> Callable[[T], T]:
-    # obj可以是include(),也可以是class-view, func-view
-    def wrapper(obj: T) -> T:
-        if isinstance(obj, tuple):
-            urlpatterns = getattr(obj[0], "urlpatterns", [])
-            add_tag_urlpatterns(urlpatterns, tags)
+def mark_tags(*tags: str) -> Callable[[T], T]:
+    def wrapper(view: T) -> T:
+        if isinstance(view, (list, tuple)):
+            # For include(...) processing.
+            urlconf_module = view[0]
+            urlpatterns = getattr(urlconf_module, "urlpatterns", urlconf_module)
+            mark_tags_for_urlpatterns(urlpatterns, tags)
+        elif callable(view):
+            _mark_tags_for_view(view, tags)
         else:
-            add_tag_to_view(obj, tags)
-        return obj
+            raise TypeError('view must be a callable or a list/tuple in the case of include().')
+        return view
 
     return wrapper
 
 
-def add_tags_2(obj: T, tags: Union[list, tuple]) -> T:
+def deprecated_mark_tags(obj: T, tags: Union[list, tuple]) -> T:
     if isinstance(obj, tuple):
         urlpatterns = getattr(obj[0], "urlpatterns", [])
-        add_tag_urlpatterns(urlpatterns, tags)
+        mark_tags_for_urlpatterns(urlpatterns, tags)
     else:
-        add_tag_to_view(obj, tags)
+        _mark_tags_for_view(obj, tags)
     return obj

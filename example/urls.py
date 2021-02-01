@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.urls import include, path
 
-from django_simple_api.extras import add_tags_1, add_tag_urlpatterns, add_tags_2
+from django_simple_api.extras import mark_tags, mark_tags_for_urlpatterns, deprecated_mark_tags
 
 urlpatterns = [
     # generate documentation
@@ -30,8 +30,8 @@ urlpatterns = [
         },
     ),
     # unit test
-    path("test/", add_tags_1("tag1")(include("tests.urls"))),
-    path("test/", add_tags_2(include("tests.urls"), ["tag3"])),
+    path("test/", mark_tags("tag1")(include("tests.urls"))),
+    path("test/", deprecated_mark_tags(include("tests.urls"), ["tag3"])),
 ]
 
-add_tag_urlpatterns(urlpatterns, ("tag2",))
+mark_tags_for_urlpatterns(urlpatterns, ("tag2",))
