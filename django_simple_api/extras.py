@@ -44,11 +44,13 @@ def describe_extra_docs(handler: T, info: Dict[str, Any]) -> T:
     return handler
 
 
-def add_tag_to_view(handler, tags):
-    describe_extra_docs(handler, {"tags": list(tags)})
+def add_tag_to_view(handler: Any, tags: Union[list, tuple]) -> None:
+    describe_extra_docs(handler, {"tags": tags})
 
 
-def add_tag_urlpatterns(urlpatterns: List[Union[URLPattern, URLResolver]], tags):
+def add_tag_urlpatterns(
+    urlpatterns: List[Union[URLPattern, URLResolver]], tags: Union[list, tuple]
+) -> None:
     for item in urlpatterns:
         if isinstance(item, URLPattern):
             add_tag_to_view(item.callback, tags)
@@ -56,12 +58,23 @@ def add_tag_urlpatterns(urlpatterns: List[Union[URLPattern, URLResolver]], tags)
             add_tag_urlpatterns(item.url_patterns, tags)
 
 
-def add_tags(*args: str) -> Callable:
+def add_tags_1(*tags: str) -> Callable[[T], T]:
+    # obj可以是include(),也可以是class-view, func-view
     def wrapper(obj: T) -> T:
         if isinstance(obj, tuple):
             urlpatterns = getattr(obj[0], "urlpatterns", [])
-            add_tag_urlpatterns(urlpatterns, args)
+            add_tag_urlpatterns(urlpatterns, tags)
         else:
-            add_tag_to_view(obj, args)
+            add_tag_to_view(obj, tags)
         return obj
+
     return wrapper
+
+
+def add_tags_2(obj: T, tags: Union[list, tuple]) -> T:
+    if isinstance(obj, tuple):
+        urlpatterns = getattr(obj[0], "urlpatterns", [])
+        add_tag_urlpatterns(urlpatterns, tags)
+    else:
+        add_tag_to_view(obj, tags)
+    return obj
