@@ -40,10 +40,3 @@ def describe_extra_docs(handler: T, info: Dict[str, Any]) -> T:
     else:
         setattr(handler, "__extra_docs__", __extra_docs__)
     return handler
-
-
-def mark_tags(*tags: str) -> Callable[[T], T]:
-    def wrapper(handler: T) -> T:
-        return describe_extra_docs(handler, {"tags": tags})
-
-    return wrapper

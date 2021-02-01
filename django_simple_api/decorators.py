@@ -7,6 +7,8 @@ from django.views import View
 from pydantic import BaseModel, create_model
 from pydantic.utils import display_as_type
 
+from .extras import describe_extra_docs
+
 if sys.version_info >= (3, 9):
     # https://www.python.org/dev/peps/pep-0585/
 
@@ -17,6 +19,7 @@ else:
     GenericType = (type(List[str]),)
 
 T = TypeVar("T")
+C = TypeVar("C", bound=Callable)
 
 
 def allow_request_method(method: str) -> Callable[[T], T]:
@@ -98,3 +101,10 @@ def describe_responses(responses: Dict[int, dict]) -> Callable[[T], T]:
         return func
 
     return decorator
+
+
+def mark_tags(*tags: str) -> Callable[[C], C]:
+    def wrapper(handler: C) -> C:
+        return describe_extra_docs(handler, {"tags": tags})
+
+    return wrapper
