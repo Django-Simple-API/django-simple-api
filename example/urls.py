@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.urls import include, path
 
+from django_simple_api.extras import add_tags_1, add_tag_urlpatterns, add_tags_2
+
 urlpatterns = [
     # generate documentation
     path(
@@ -28,5 +30,8 @@ urlpatterns = [
         },
     ),
     # unit test
-    path("test/", include("tests.urls")),
+    path("test/", add_tags_1("tag1")(include("tests.urls"))),
+    path("test/", add_tags_2(include("tests.urls"), ["tag3"])),
 ]
+
+add_tag_urlpatterns(urlpatterns, ("tag2",))
