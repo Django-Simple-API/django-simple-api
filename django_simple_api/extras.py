@@ -27,16 +27,19 @@ def describe_extra_docs(handler: T, info: Dict[str, Any]) -> T:
 
     https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#operationObject
     """
-    __extra_docs__ = merge_openapi_info(getattr(handler, "__extra_docs__", {}), info)
-
     if is_class_view(handler):
         view_class = handler.view_class  # type: ignore
         for method in filter(
             lambda method: hasattr(view_class, method), view_class.http_method_names
         ):
-            setattr(
-                getattr(view_class, method.lower()), "__extra_docs__", __extra_docs__
+            handler_method = getattr(view_class, method.lower())
+            __extra_docs__ = merge_openapi_info(
+                getattr(handler_method, "__extra_docs__", {}), info
             )
+            setattr(handler_method, "__extra_docs__", __extra_docs__)
     else:
+        __extra_docs__ = merge_openapi_info(
+            getattr(handler, "__extra_docs__", {}), info
+        )
         setattr(handler, "__extra_docs__", __extra_docs__)
     return handler
