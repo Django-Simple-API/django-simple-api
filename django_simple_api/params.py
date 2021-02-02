@@ -109,7 +109,9 @@ def _parse_and_bound_params(handler: HTTPHandler) -> HTTPHandler:
             _type_[name] = (annotation, default)
         else:
             # If the view used `pydantic.fields` but not used type annotation, throw an exception.
-            raise TypeError(f"The `{name}` parameter of `{handler.__qualname__}` not use type annotations.")
+            raise TypeError(
+                f"The `{name}` parameter of `{handler.__qualname__}` not use type annotations."
+            )
 
     __locals__ = locals()
     for key in filter(
