@@ -409,6 +409,13 @@ Then the interface document will show:
 }
 ```
 
+##### 装饰多个
+##### responses.py
+##### 默认响应类型为 json
+##### 简易响应类型，其他响应类型用法
+##### describe_responses 用法
+##### pydantic typing 
+
 #### Add `tags` to the view
 
 
