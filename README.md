@@ -46,6 +46,7 @@ You can declare request parameters like the following example:
 
 ```python
 # views.py
+
 from django.views import View
 from django.http.response import HttpResponse
 
@@ -71,6 +72,8 @@ Simple API has a total of 6 fields, corresponding to the parameters in different
 For example:
 
 ```python
+# views.py
+
 from pydantic import BaseModel, Field
 
 class ArticleForm(BaseModel):
@@ -108,6 +111,8 @@ class JustTest(View):
 As you can see in the above example, Simple API also has the function of type conversion. If the parameter you pass in is legal for the declared type, it will be converted to the declared type without manual operation:
 
 ```python
+# views.py
+
 class JustTest(View):
     def get(self, request, last_time: datetime.date = Query(...)):
         print(last_time, type(last_time))
@@ -132,6 +137,7 @@ Use `Query(...)`  to declare the parameter, which means this parameter is requir
 In addition, you can use default parameters like this:
 
 ```python
+# views.py
 class JustTest(View):
     def get(self, request, id: int = Query(10)):
         return HttpResponse(id)
@@ -143,6 +149,8 @@ class JustTest(View):
 Or you can use the `default_factory` parameter and pass in a function to dynamically calculate the default value:
 
 ```python
+# views.py
+
 def func():
     return 1000
 
@@ -161,6 +169,8 @@ ValueError: cannot specify both default and default_factory
 In addition to the `default`、`default_factory`, you can also use more attributes to constrain parameters, such as:
 
 ```python
+# views.py
+
 class JustTest(View):
     # Use `const` to constrain the parameter value must be the same as the default value
     def get(self, request, param: int = Query(10, const=True)):
@@ -208,6 +218,7 @@ When you finish the above tutorial, you can already declare parameters well. If 
 If you want to automatically generate interface documentation, you must add the url of Simple API to your url.py like this:
 ```python
 # url.py
+
 from django.urls import include, path
 from django.conf import settings
 
@@ -260,9 +271,145 @@ You can also not use `allow_request_method`, this will not have any negative eff
 We will use `warning.warn()` to remind you, this is not a problem, just to prevent you from forgetting to use it.
 
 Now, the `view-function` can also generate documents, you can continue to visit your server to view the effect.
-#### Improve documentation information
-##### function doc ...
-##### responses ...
+
+### Improve documentation information
+Simple API is generated according to the [`OpenAPI`](https://github.com/OAI/OpenAPI-Specification) specification. 
+In addition to automatically generating function parameters, you can also manually add some additional information to the view yourself, 
+for example: `summary` `description` `responses` and `tags`.
+
+#### Add `summary` and `description` to the view
+`summary` and `description` can describe the information of your interface in the interface document, `summary` is used to briefly introduce the function of the interface, and `description` is used to describe more information.
+
+There must be a blank line between `summary` and `description`. If there is no blank line, then all `doc` will be considered as `summary`.
+
+```python
+# views.py
+
+class JustTest(View):
+    def get(self, request, id: int = Query(...)):
+        """
+        This is summary.
+
+        This is description ...
+        This is description ...
+        """
+        return HttpResponse(id)
+```
+
+#### Add `responses` to the view
+`responses` is also important information in the interface documentation.
+You can define the response information that the interface should return in various situations.
+
+Simple API highly recommends using `pydantic.BaseModel` to define the data structure of the response message, for example:
+
+```python
+# views.py
+
+from typing import List, Dict
+
+from pydantic import BaseModel
+from django.views import View
+
+from django_simple_api import describe_response
+
+
+# define the data structure for `response`
+class JustTestResponses(BaseModel):
+    code: str
+    message: str
+    data: List[dict]
+
+
+class JustTest(View):
+    
+    # describe the response information of the interface
+    @describe_response(200, content=JustTestResponses)
+    def get(self, request, id: int = Query(...)):
+
+        # actual response data(just an example)
+        resp = {
+            "code": "0",
+            "message": "success",
+            "data": [
+                {"id": 0, "name": "Tom"},
+                {"id": 1, "name": "John"},
+            ]
+        }
+        return JsonResponse(resp)
+```
+
+Then the interface document will show:
+
+```shell script
+{
+  "code": "string",
+  "message": "string",
+  "data": [
+    {}
+  ]
+}
+```
+
+You can also show the example in the interface document, you only need to add the example to the `BaseModel` and it will be shown in the interface document:
+
+```python
+# views.py
+
+class JustTestResponses(BaseModel):
+    result: str
+    message: str
+    data: List[Dict[int, str]]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "code": "0",
+                "message": "Request success",
+                "data": [
+                    {"id": 0, "name": "Tom"},
+                    {"id": 1, "name": "John"},
+                ]
+            }
+        }
+
+class JustTest(View):
+    
+    # describe the response information of the interface
+    @describe_response(200, content=JustTestResponses)
+    def get(self, request, id: int = Query(...)):
+
+        # actual response data(just an example)
+        resp = {
+            "code": "0",
+            "message": "success",
+            "data": [
+                {"id": 0, "name": "Tom"},
+                {"id": 1, "name": "John"},
+            ]
+        }
+        return JsonResponse(resp)
+```
+
+Then the interface document will show:
+
+```shell script
+{
+  "code": "0",
+  "message": "Request success",
+  "data": [
+    {
+      "id": 0,
+      "name": "Tom"
+    },
+    {
+      "id": 1,
+      "name": "John"
+    }
+  ]
+}
+```
+
+#### Add `tags` to the view
 
 
 ### Extensions
