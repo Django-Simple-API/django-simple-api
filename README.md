@@ -40,7 +40,7 @@ MIDDLEWARE = [
 
 ### Parameter declaration and verification
 
-Simple API use `pydantic` to declare parameters and parameter verification.
+***Simple API*** use `pydantic` to declare parameters and parameter verification.
 
 You can declare request parameters like the following example:
 
@@ -57,7 +57,7 @@ class JustTest(View):
         return HttpResponse(id)
 ```
 
-Simple API has a total of 6 fields, corresponding to the parameters in different positions:
+***Simple API*** has a total of 6 fields, corresponding to the parameters in different positions:
 
 ##### All fields and description
 | Field     | Description |
@@ -108,7 +108,7 @@ class JustTest(View):
 * When you need to get parameters from `Header`, you may need to use `alias` to indicate the request header you want to get, because the name of the request header may not be a valid python identifier.
 * When you use `Exclusive("body")` to get the form from a specified location, you can no longer use the `Body` field.
 
-As you can see in the above example, Simple API also has the function of type conversion. If the parameter you pass in is legal for the declared type, it will be converted to the declared type without manual operation:
+As you can see in the above example, ***Simple API*** also has the function of type conversion. If the parameter you pass in is legal for the declared type, it will be converted to the declared type without manual operation:
 
 ```python
 # views.py
@@ -215,7 +215,7 @@ When you finish the above tutorial, you can already declare parameters well. If 
 
 
 ### Generate documentation
-If you want to automatically generate interface documentation, you must add the url of Simple API to your url.py like this:
+If you want to automatically generate interface documentation, you must add the url of ***Simple API*** to your url.py like this:
 ```python
 # url.py
 
@@ -228,7 +228,7 @@ urlpatterns = [
     ...
 ]
 
-# Simple API urls, should only run in a test environment.
+# ***Simple API*** urls, should only run in a test environment.
 if settings.DEBUG:
     urlpatterns += [
         # generate documentation
@@ -237,7 +237,7 @@ if settings.DEBUG:
             include("django_simple_api.urls"),
             {
                 "template_name": "swagger.html",
-                "title": "Django Simple API",
+                "title": "Django ***Simple API***",
                 "description": "This is description of your interface document.",
                 "version": "0.1.0",
             },
@@ -273,7 +273,7 @@ We will use `warning.warn()` to remind you, this is not a problem, just to preve
 Now, the `view-function` can also generate documents, you can continue to visit your server to view the effect.
 
 ### Improve documentation information
-Simple API is generated according to the [`OpenAPI`](https://github.com/OAI/OpenAPI-Specification) specification. 
+***Simple API*** is generated according to the [`OpenAPI`](https://github.com/OAI/OpenAPI-Specification) specification. 
 In addition to automatically generating function parameters, you can also manually add some additional information to the view yourself, 
 for example: `summary` `description` `responses` and `tags`.
 
@@ -300,7 +300,7 @@ class JustTest(View):
 `responses` is also important information in the interface documentation.
 You can define the response information that the interface should return in various situations.
 
-Simple API highly recommends using `pydantic.BaseModel` to define the data structure of the response message, for example:
+***Simple API*** highly recommends using `pydantic.BaseModel` to define the data structure of the response message, for example:
 
 ```python
 # views.py
@@ -399,12 +399,51 @@ Then the interface document will show:
 }
 ```
 
-##### 装饰多个
-##### responses.py
-##### 默认响应类型为 json
-##### 简易响应类型，其他响应类型用法
-##### describe_responses 用法
-##### pydantic typing 
+The default response type of ***Simple API*** is `application/json`, if you want to set other types, you can use it like this:
+
+```python
+# views.py
+
+class JustTest(View):
+    
+    @describe_response(401, content={"text/plain":{"schema": {"type": "string", "example": "No permission"}}})
+    def get(self, request, id: int = Query(...)):
+        return JsonResponse(id)
+```
+
+Although we support custom response types and data structures, we recommend that you try not to do this, unless it is a very simple response as in the example,
+otherwise it will take up a lot of space in your code files and it will not conducive to other people in the team to read the code.
+
+You can also use multiple `describe_response` in the same view at the same time, but be careful not to repeat the status code, otherwise the status code below will be overwritten.
+
+If you need to use multiple `describe_response`, then we still recommend you to use `describe_responses`, which can describe multiple response states at once:
+
+```python
+# views.py
+
+from django_simple_api import describe_responses
+
+class JustTestResponses(BaseModel):
+    code: str
+    message: str
+    data: List[dict]
+
+
+class JustTest(View):
+    
+    @describe_responses({
+            200: {"content": JustTestResponses},
+            401: {"content": {"text/plain": {"schema": {"type": "string", "example": "No permission"}}}}
+        })
+    def get(self, request, id: int = Query(...)):
+        return JsonResponse(id)
+```
+
+
+
+##### To be continue ...
+1. responses.py
+2. pydantic typing 
 
 #### Add `tags` to the view
 
