@@ -416,7 +416,7 @@ otherwise it will take up a lot of space in your code files and it will not cond
 
 You can also use multiple `describe_response` in the same view at the same time, but be careful not to repeat the status code, otherwise the status code below will be overwritten.
 
-If you need to use multiple `describe_response`, then we still recommend you to use `describe_responses`, which can describe multiple response states at once:
+If you need to use multiple `describe_response`, then we will recommend you to use `describe_responses`, which can describe multiple response states at once:
 
 ```python
 # views.py
