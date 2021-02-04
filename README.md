@@ -305,7 +305,7 @@ Simple API highly recommends using `pydantic.BaseModel` to define the data struc
 ```python
 # views.py
 
-from typing import List, Dict
+from typing import List
 
 from pydantic import BaseModel
 from django.views import View
@@ -356,15 +356,15 @@ You can also show the example in the interface document, you only need to add th
 # views.py
 
 class JustTestResponses(BaseModel):
-    result: str
+    code: str
     message: str
-    data: List[Dict[int, str]]
-
+    data: List[dict]
+    
     class Config:
         schema_extra = {
             "example": {
                 "code": "0",
-                "message": "Request success",
+                "message": "success",
                 "data": [
                     {"id": 0, "name": "Tom"},
                     {"id": 1, "name": "John"},
@@ -374,19 +374,9 @@ class JustTestResponses(BaseModel):
 
 class JustTest(View):
     
-    # describe the response information of the interface
     @describe_response(200, content=JustTestResponses)
     def get(self, request, id: int = Query(...)):
-
-        # actual response data(just an example)
-        resp = {
-            "code": "0",
-            "message": "success",
-            "data": [
-                {"id": 0, "name": "Tom"},
-                {"id": 1, "name": "John"},
-            ]
-        }
+        resp = {...}
         return JsonResponse(resp)
 ```
 
@@ -395,7 +385,7 @@ Then the interface document will show:
 ```shell script
 {
   "code": "0",
-  "message": "Request success",
+  "message": "success",
   "data": [
     {
       "id": 0,
