@@ -70,7 +70,7 @@ def wrapper_urlpatterns(
             wrapper_urlpatterns(wrappers, item.url_patterns)
 
 
-def wrapper_chain(wrappers: Sequence[Callable[[T], T]], view: T) -> T:
+def wrapper_chain(wrappers: Sequence[Callable[[T], T]], view: Any) -> Any:
     if isinstance(view, (list, tuple)):
         # For include(...) processing.
         urlconf_module = view[0]
