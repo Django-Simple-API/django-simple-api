@@ -16,7 +16,7 @@ Including another URLconf
 from django.urls import include, path
 
 from django_simple_api import mark_tags
-from django_simple_api import wrapper_chain
+from django_simple_api import wrapper_include
 
 urlpatterns = [
     # generate documentation
@@ -31,5 +31,5 @@ urlpatterns = [
         },
     ),
     # unit test
-    path("test/", wrapper_chain([mark_tags("unit test")], include("tests.urls"))),
+    path("test/", wrapper_include([mark_tags("unit test")], include("tests.urls"))),
 ]
