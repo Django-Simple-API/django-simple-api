@@ -452,8 +452,6 @@ class JustTest(View):
 Although we support custom response types and data structures, we recommend that you try not to do this, unless it is a very simple response as in the example,
 otherwise it will take up a lot of space in your code files and it will not conducive to other people in the team to read the code.
 
-You can also use multiple `describe_response` in the same view at the same time, but be careful not to repeat the status code, otherwise the status code below will be overwritten.
-
 If you need to use multiple `describe_response`, then we will recommend you to use `describe_responses`, which can describe multiple response states at once:
 
 ```python
@@ -480,8 +478,6 @@ class JustTest(View):
 
 
 ##### To be continue ...
-1. responses.py
-2. pydantic typing 
 
 #### Add `tags` to the view
 
