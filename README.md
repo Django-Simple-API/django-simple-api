@@ -25,15 +25,6 @@ INSTALLED_APPS = [
 ]
 ```
 
-Add `SimpleApiMiddleware` to your `MIDDLEWARE` in settings:
-
-```python
-MIDDLEWARE = [
-    ...
-    "django_simple_api.middleware.SimpleApiMiddleware",
-]
-```
-
 ## Usage
 
 ⚠️ We support both `view-function` and `class-view` at the same time for all functions. If there is no special description in the document, it means that it is applicable to both views. Where special support is needed, we will indicate how to do it in the document.
@@ -251,6 +242,14 @@ When you finish the above tutorial, you can already declare parameters well. If 
 
 ### Parameter verification
 
+Add `SimpleApiMiddleware` to your `MIDDLEWARE` in settings:
+
+```python
+MIDDLEWARE = [
+    ...
+    "django_simple_api.middleware.SimpleApiMiddleware",
+]
+```
 
 ### Generate documentation
 If you want to automatically generate interface documentation, you must add the url of ***Simple API*** to your url.py like this:
