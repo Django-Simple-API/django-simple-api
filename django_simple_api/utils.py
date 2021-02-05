@@ -1,4 +1,5 @@
 import re
+from functools import update_wrapper
 from typing import Any, Callable, Generator, List, Tuple, Union, TypeVar, Sequence
 
 from django.conf import settings
@@ -54,8 +55,13 @@ def is_class_view(handler: Callable) -> bool:
 
 
 def _wrapper_handler(wrappers: Sequence[Callable[[T], T]], handler: T) -> T:
+    _handler = handler
     for wrapper in wrappers:
         handler = wrapper(handler)
+        if _handler is handler:
+            continue
+        handler = update_wrapper(handler, _handler)  # type: ignore
+        _handler = handler
     return handler
 
 
