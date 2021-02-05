@@ -63,45 +63,49 @@ class JustTest(View):
 For example:
 
 ```python
+# urls.py
+
+urlpatterns = [
+        ...
+        path("/path/<param2>/<param3>/", JustTest.as_view(), name="path_name"),
+    ]
+```
+
+```python
 # views.py
 
-from pydantic import BaseModel, Field
-
-class ArticleForm(BaseModel):
-    article_title: str = Field()
-    article_content: str = Field()
+from django_simple_api import Query, Path, Body, Cookie, Header
 
 
 class JustTest(View):
     # The parameter names used in the above examples are for demonstration only.
     def post(self, request,
+            
             param1: int = Query(),
-            param2: int = Query(),
+            # If you have multiple parameters in any field, you can use this field multiple times, 
+            # as long as your parameter names are not repeated.
+            param2: int = Path(),
             param3: int = Path(),
-            # param4: str = Body(),
+            param4: str = Body(),
             userid: int = Cookie(alias="uid"),
+            username: int = Cookie(alias="username"),
             csrf_token: str = Header(alias="X-CSRF-TOKEN"),
-
-            # Simple API will get the `article_title` `article_content` parameter from the request body and create an object `article`
-            article: ArticleForm = Exclusive("body"),
         ):
 
-        # You can get the parameters like this:
-        title = article.article_title
-        content = article.article_content
-
-        # Or directly convert to a dictionary:
-        d = article.dict()  # {"article_title": ..., "article_content": ...}
         return HttpResponse(d)
 ```
 
 ⚠️ In the above example, you have two things to note:
+* If you have multiple parameters in any field, you can use this field multiple times, as long as your parameter names are not repeated.
 * When you need to get parameters from `Header`, you may need to use `alias` to indicate the request header you want to get, because the name of the request header may not be a valid python identifier.
-* When you use `Exclusive("body")` to get the form from a specified location, you can no longer use the `Body` field.
 
-Here's another example of how to combine `Exclusive` with`Django Model`, now suppose you have the following Model:
+`Exclusive` is a special field that can obtain all the parameters required by the entire data model from a specified location at one time.
+
+Here's has a example of how to combine `Exclusive` with`Django Model`, now suppose you have the following Model:
 
 ```python
+# models.py
+
 from django.db import models
 
 class UserModel(models.Model):
@@ -109,25 +113,39 @@ class UserModel(models.Model):
     age = models.SmallIntegerField(default=19)
 ```
 
-You can define the following `Form`:
+You can use `pydantic.BaseModel` to define a `"Form"`，
+then use the `Exclusive` field to get all the parameters of the `Form` from the specified `body`:
 
 ```python
+# views.py
+
+from django.views import View
 from pydantic import BaseModel, Field
 
+from django_simple_api import Exclusive
+
+
+# Use `pydantic.BaseModel` to define a `"Form"`
 class UserForm(BaseModel):
     name: str = Field(max_length=25, description="This is user's name")
     age: int = Field(19, description="This is user's age")
-```
 
-And then in the `views.py`:
-
-```python
-from django.views import View
-from django_simple_api import Exclusive
 
 class UserView(View):
-    def post(self, request, user: UserForm = Exclusive(name="body")):
+    def post(self, request, 
+            # Use the `Exclusive` field to get all the parameters of the `Form` from the specified `body`
+            user: UserForm = Exclusive(name="body")
+        ):
+        # You can get the parameters from the "Form" like this:
+        name = user.name
+        age = user.age
+        
+        # Also convert the form into a dictionary:
+        user.dict()  # {"name": ..., "age": ...}
+        
+        # So you can directly instantiate the UserModel like this:
         UserModel(**user.dict()).save()
+
         return HttpResponse("success")
 ```
 
