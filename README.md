@@ -211,6 +211,42 @@ And there are more attributes applied to `str` or `list` type, you can refer to 
 | regex          | only applies to strings, requires the field match again a regular expression pattern string. The schema will have a ``pattern`` validation keyword|
 | extra          | any additional keyword arguments will be added as is to the schema|
 
+
+Here's another example of how to combine `Exclusive` with`Django Model`, now suppose you have the following Model:
+
+```python
+from django.db import models
+
+class UserModel(models.Model):
+    name = models.CharField(max_length=25)
+    age = models.SmallIntegerField(default=19)
+```
+
+You can define the following `Form`:
+
+```python
+from pydantic import BaseModel, Field
+
+class UserForm(BaseModel):
+    name: str = Field(..., max_length=25, description="This is user's name")
+    age: int = Field(19, description="This is user's age")
+```
+
+And then in the `views.py`:
+
+```python
+from django.views import View
+from django_simple_api import Exclusive
+
+class UserView(View):
+    def post(self, request, user: UserForm = Exclusive(name="body")):
+        UserModel(**user.dict()).save()
+        return HttpResponse("success")
+```
+
+>There are other uses of `model.dict()`, see https://pydantic-docs.helpmanual.io/usage/exporting_models/#modeldict for more details
+
+
 When you finish the above tutorial, you can already declare parameters well. If you have registered the `SimpleApiMiddleware` middleware, then all parameters will be automatically verified, and the detailed information of these parameters will be displayed in the interface document. The following will teach you how to generate the interface document.
 
 
