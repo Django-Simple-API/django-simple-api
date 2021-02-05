@@ -4,6 +4,7 @@ from inspect import isclass
 from typing import Any, Callable, Dict, List, Type, TypeVar, Union
 
 from django.views import View
+from django.views.decorators.http import require_http_methods
 from pydantic import BaseModel, create_model
 from pydantic.utils import display_as_type
 
@@ -34,7 +35,7 @@ def allow_request_method(method: str) -> Callable[[T], T]:
             raise TypeError("Can only be used for functions")
 
         setattr(view_func, "__method__", method.upper())
-        return view_func
+        return require_http_methods([method])(view_func)
 
     return wrapper
 

@@ -8,17 +8,15 @@ from django.http.response import (
     HttpResponseBadRequest,
     HttpResponseNotAllowed,
 )
+from django.utils.deprecation import MiddlewareMixin
 
 from .exceptions import RequestValidationError
 from .params import verify_params
 from .utils import is_class_view, merge_query_dict
 
 
-class SimpleApiMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request: HttpRequest) -> HttpResponse:
+class ParseRequestDataMiddleware(MiddlewareMixin):
+    def process_request(self, request: HttpRequest) -> HttpResponse:
         request.JSON = None
         if request.content_type == "application/json":
             try:
@@ -41,8 +39,9 @@ class SimpleApiMiddleware:
                 request._load_post_and_files()
                 request.method = _shadow
             request.DATA = merge_query_dict(request.POST)
-        return self.get_response(request)
 
+
+class ValidateRequestDataMiddleware(ParseRequestDataMiddleware):
     def process_view(
         self,
         request: HttpRequest,
@@ -50,21 +49,11 @@ class SimpleApiMiddleware:
         view_args: List[Any],
         view_kwargs: Dict[str, Any],
     ) -> Optional[HttpResponse]:
-
-        # check the request method of view function
-        # class-view does not need to be checked
-        if not is_class_view(view_func):
-            allow_method = getattr(view_func, "__method__", None)
-            if allow_method and request.method.upper() != allow_method:
-                return HttpResponseNotAllowed([allow_method])
-
-        # type checking of request parameters
         try:
             view_kwargs.update(verify_params(view_func, request, view_kwargs))
+            return None
         except RequestValidationError as error:
             return self.process_validation_error(error)
-
-        return None  # check completed
 
     @staticmethod
     def process_validation_error(
@@ -75,3 +64,7 @@ class SimpleApiMiddleware:
             content_type="application/json",
             status=HTTPStatus.UNPROCESSABLE_ENTITY,
         )
+
+
+class SimpleApiMiddleware(ValidateRequestDataMiddleware):
+    pass
