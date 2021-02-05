@@ -257,11 +257,11 @@ And there are more attributes applied to `str` or `list` type, you can refer to 
 | extra          | any additional keyword arguments will be added as is to the schema|
 
 
-When you finish the above tutorial, you can already declare parameters well. If you have registered the `SimpleApiMiddleware` middleware, then all parameters will be automatically verified, and the detailed information of these parameters will be displayed in the interface document. The following will teach you how to generate the interface document.
+When you finish the above tutorial, you can already declare parameters well. 
+Next, you can use the functions of "parameter verification" and "document generation".
 
 ### Parameter verification
-
-Add `SimpleApiMiddleware` to your `MIDDLEWARE` in settings:
+If you want to use the "parameter verification" function, you must register the middleware like this:
 
 ```python
 MIDDLEWARE = [
@@ -270,10 +270,29 @@ MIDDLEWARE = [
 ]
 ```
 
+Then all your request parameters will be verified according to the type you declared. 
+
+If your parameter verification fails, an error will be returned, like this:
+
+```shell script
+[
+    {
+        "loc": [
+            "id"
+        ],
+        "msg": "value is not a valid integer",
+        "type": "type_error.integer"
+    }
+]
+```
+
+`loc` indicates which parameter has an error, `msg` describes the cause of the error, 
+Seeing such information, you can easily confirm where there is a problem with your parameters.
+
 ### Generate documentation
-If you want to automatically generate interface documentation, you must add the url of ***Simple API*** to your url.py like this:
+If you want to automatically generate interface documentation, you must add the url of ***Simple API*** to your urls.py like this:
 ```python
-# url.py
+# urls.py
 
 from django.urls import include, path
 from django.conf import settings
@@ -311,6 +330,7 @@ But if you are using `view-function`, you must declare the request method suppor
 
 ```python
 # views.py
+
 from django_simple_api import allow_request_method
 
 @allow_request_method("get")
