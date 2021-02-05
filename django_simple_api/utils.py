@@ -1,5 +1,5 @@
 import re
-import functools
+from functools import update_wrapper
 from typing import Any, Callable, Generator, List, Tuple, Union, TypeVar, Sequence
 
 from django.conf import settings
@@ -58,8 +58,9 @@ def _wrapper_handler(wrappers: Sequence[Callable[[T], T]], handler: T) -> T:
     _handler = handler
     for wrapper in wrappers:
         handler = wrapper(handler)
-        if not (_handler is handler):
-            handler = functools.update_wrapper(handler, _handler)
+        if _handler is handler:
+            continue
+        handler = update_wrapper(handler, _handler)  # type: ignore
         _handler = handler
     return handler
 
