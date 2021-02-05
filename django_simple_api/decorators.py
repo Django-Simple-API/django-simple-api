@@ -35,7 +35,7 @@ def allow_request_method(method: str) -> Callable[[T], T]:
             raise TypeError("Can only be used for functions")
 
         setattr(view_func, "__method__", method.upper())
-        return require_http_methods([method])(view_func)
+        return require_http_methods([method.upper()])(view_func)
 
     return wrapper
 
