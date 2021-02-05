@@ -164,11 +164,12 @@ In addition, you can use default parameters like this:
 
 ```python
 # views.py
+
 class JustTest(View):
     def get(self, request, id: int = Query(10)):
         return HttpResponse(id)
-    # Or
-    def get(self, request, id: int = Query(None)):
+    # equivalent to
+    def get(self, request, id: int = Query(default=10)):
         return HttpResponse(id)
 ```
 
