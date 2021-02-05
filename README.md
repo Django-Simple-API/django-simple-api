@@ -266,7 +266,7 @@ urlpatterns = [
     ...
 ]
 
-# ***Simple API*** urls, should only run in a test environment.
+# Simple API urls, should only run in a test environment.
 if settings.DEBUG:
     urlpatterns += [
         # generate documentation
