@@ -148,8 +148,9 @@ class UserView(View):
 
         return HttpResponse("success")
 ```
+> ⚠️ Note, when you use `Exclusive("body")` to get the form from a specified location, you can no longer use the `Body` field, but use of other fields will not be affected.
 
-> There are other uses of `model.dict()`, see [`pydantic`](https://pydantic-docs.helpmanual.io/usage/exporting_models/#modeldict) for more details.
+>There are other uses of `BaseModel`, see [`pydantic`](https://pydantic-docs.helpmanual.io/usage/exporting_models/#modeldict) for more details.
 
 
 As you can see in the above example, ***Simple API*** also has the function of type conversion. If the parameter you pass in is legal for the declared type, it will be converted to the declared type without manual operation:
