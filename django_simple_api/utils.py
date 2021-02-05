@@ -1,10 +1,12 @@
 import re
-from typing import Any, Callable, Generator, List, Tuple, Union
+from typing import Any, Callable, Generator, List, Tuple, Union, TypeVar, Sequence
 
 from django.conf import settings
 from django.http.request import QueryDict
 from django.urls import URLPattern, URLResolver
 from django.urls.conf import RegexPattern, RoutePattern
+
+T = TypeVar("T", bound=Callable)
 
 RE_PATH_PATTERN = re.compile(r"\(\?P<(?P<name>\w*)>.*?\)")
 PATH_PATTERN = re.compile(r"<(.*?:)?(?P<name>\w*)>")
@@ -49,3 +51,35 @@ def is_class_view(handler: Callable) -> bool:
     Judge handler is django.views.View subclass
     """
     return hasattr(handler, "view_class")
+
+
+def _wrapper_handler(wrappers: Sequence[Callable[[T], T]], handler: T) -> T:
+    for wrapper in wrappers:
+        handler = wrapper(handler)
+    return handler
+
+
+def wrapper_urlpatterns(
+    wrappers: Sequence[Callable[[T], T]],
+    urlpatterns: List[Union[URLPattern, URLResolver]],
+):
+    for item in urlpatterns:
+        if isinstance(item, URLPattern):
+            _wrapper_handler(wrappers, item.callback)
+        else:
+            wrapper_urlpatterns(wrappers, item.url_patterns)
+
+
+def wrapper_include(wrappers: Sequence[Callable[[T], T]], view: Any) -> Any:
+    if isinstance(view, (list, tuple)):
+        # For include(...) processing.
+        urlconf_module = view[0]
+        urlpatterns = getattr(urlconf_module, "urlpatterns", urlconf_module)
+        wrapper_urlpatterns(wrappers, urlpatterns)
+    elif callable(view):
+        view = _wrapper_handler(wrappers, view)
+    else:
+        raise TypeError(
+            "view must be a callable or a list/tuple in the case of include()."
+        )
+    return view
