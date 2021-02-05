@@ -53,7 +53,7 @@ from django.http.response import HttpResponse
 from django_simple_api import Query
 
 class JustTest(View):
-    def get(self, request, id: int = Query(...)):
+    def get(self, request, id: int = Query()):
         return HttpResponse(id)
 ```
 
@@ -77,19 +77,19 @@ For example:
 from pydantic import BaseModel, Field
 
 class ArticleForm(BaseModel):
-    article_title: str = Field(...)
-    article_content: str = Field(...)
+    article_title: str = Field()
+    article_content: str = Field()
 
 
 class JustTest(View):
     # The parameter names used in the above examples are for demonstration only.
     def post(self, request,
-            param1: int = Query(...),
-            param2: int = Query(...),
-            param3: int = Path(...),
-            # param4: str = Body(...),
-            userid: int = Cookie(..., alias="uid"),
-            csrf_token: str = Header(..., alias="X-CSRF-TOKEN"),
+            param1: int = Query(),
+            param2: int = Query(),
+            param3: int = Path(),
+            # param4: str = Body(),
+            userid: int = Cookie(alias="uid"),
+            csrf_token: str = Header(alias="X-CSRF-TOKEN"),
 
             # Simple API will get the `article_title` `article_content` parameter from the request body and create an object `article`
             article: ArticleForm = Exclusive("body"),
@@ -124,7 +124,7 @@ You can define the following `Form`:
 from pydantic import BaseModel, Field
 
 class UserForm(BaseModel):
-    name: str = Field(..., max_length=25, description="This is user's name")
+    name: str = Field(max_length=25, description="This is user's name")
     age: int = Field(19, description="This is user's age")
 ```
 
@@ -149,13 +149,13 @@ As you can see in the above example, ***Simple API*** also has the function of t
 # views.py
 
 class JustTest(View):
-    def get(self, request, last_time: datetime.date = Query(...)):
+    def get(self, request, last_time: datetime.date = Query()):
         print(last_time, type(last_time))
         # 2008-08-08 <class 'datetime.date'>
         return HttpResponse(last_time)
 ```
 
-Use `Query(...)`  to declare the parameter, which means this parameter is required. If there is no `id` parameter in the query string for url, an error will be returned:
+Use `Query()`  to declare the parameter, which means this parameter is required. If there is no `id` parameter in the query string for url, an error will be returned:
 
 ```shell script
 [
@@ -214,11 +214,11 @@ class JustTest(View):
 
     # If your parameter is of numeric type , you can use `ge`、`gt`、`le`、`lt`、`multipleOf` and other attributes
     def get(self, request,
-            param1: int = Query(..., gt=10),  # must be > 10
-            param2: int = Query(..., ge=10),  # must be >= 10
-            param3: int = Query(..., lt=10),  # must be < 10
-            param4: int = Query(..., le=10),  # must be <= 10
-            param5: int = Query(..., multipleOf=10),  # must be a multiple of 10
+            param1: int = Query(gt=10),  # must be > 10
+            param2: int = Query(ge=10),  # must be >= 10
+            param3: int = Query(lt=10),  # must be < 10
+            param4: int = Query(le=10),  # must be <= 10
+            param5: int = Query(multipleOf=10),  # must be a multiple of 10
         ):
         return HttpResponse(param)
 ```
@@ -228,7 +228,7 @@ And there are more attributes applied to `str` or `list` type, you can refer to 
 #### Field parameter description
 | Name           | description |
 | ---            | ---         |
-| default        | since this is replacing the field’s default, its first argument is used to set the default, use ellipsis (``...``) to indicate the field is required|
+| default        | since this is replacing the field’s default, its first argument is used to set the default, do not pass `default` or `default_factory` to indicate that this is a required field
 | default_factory| callable that will be called when a default value is needed for this field. If both `default` and `default_factory` are set, an error is raised.|
 | alias          | the public name of the field|
 | title          | can be any string, used in the schema|
@@ -248,6 +248,8 @@ And there are more attributes applied to `str` or `list` type, you can refer to 
 
 
 When you finish the above tutorial, you can already declare parameters well. If you have registered the `SimpleApiMiddleware` middleware, then all parameters will be automatically verified, and the detailed information of these parameters will be displayed in the interface document. The following will teach you how to generate the interface document.
+
+### Parameter verification
 
 
 ### Generate documentation
@@ -294,7 +296,7 @@ But if you are using `view-function`, you must declare the request method suppor
 from django_simple_api import allow_request_method
 
 @allow_request_method("get")
-def just_test(request, id: int = Query(...)):
+def just_test(request, id: int = Query()):
     return HttpResponse(id)
 ```
 
@@ -322,7 +324,7 @@ There must be a blank line between `summary` and `description`. If there is no b
 # views.py
 
 class JustTest(View):
-    def get(self, request, id: int = Query(...)):
+    def get(self, request, id: int = Query()):
         """
         This is summary.
 
@@ -360,7 +362,7 @@ class JustTest(View):
     
     # describe the response information of the interface
     @describe_response(200, content=JustTestResponses)
-    def get(self, request, id: int = Query(...)):
+    def get(self, request, id: int = Query()):
 
         # actual response data(just an example)
         resp = {
@@ -411,7 +413,7 @@ class JustTestResponses(BaseModel):
 class JustTest(View):
     
     @describe_response(200, content=JustTestResponses)
-    def get(self, request, id: int = Query(...)):
+    def get(self, request, id: int = Query()):
         resp = {...}
         return JsonResponse(resp)
 ```
@@ -443,7 +445,7 @@ The default response type of ***Simple API*** is `application/json`, if you want
 class JustTest(View):
     
     @describe_response(401, content={"text/plain":{"schema": {"type": "string", "example": "No permission"}}})
-    def get(self, request, id: int = Query(...)):
+    def get(self, request, id: int = Query()):
         return JsonResponse(id)
 ```
 
@@ -471,7 +473,7 @@ class JustTest(View):
             200: {"content": JustTestResponses},
             401: {"content": {"text/plain": {"schema": {"type": "string", "example": "No permission"}}}}
         })
-    def get(self, request, id: int = Query(...)):
+    def get(self, request, id: int = Query()):
         return JsonResponse(id)
 ```
 
