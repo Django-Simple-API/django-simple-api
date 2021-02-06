@@ -515,11 +515,42 @@ class JustTest(View):
 ```
 
 
-
-##### To be continue ...
-
 #### Add `tags` to the view
 
+Tagging interfaces is a good way to manage many interfaces, That's how you tag a view:
+
+```python
+from django_simple_api import mark_tags, allow_request_method, Query
+
+@mark_tags("about User")
+@allow_request_method("get")
+def get_name(request, id: int = Query(...)):
+    return HttpResponse(get_name_by_id(id))
+```
+
+You can use `@mark_tags("tag1", "tag2")` to tag a view with multiple tags
+
+We also support tagging multiple URLs at the same time
+
+```python
+from django_simple_api import wrapper_include, mark_tags
+
+urlpatterns = [
+    ...
+    path("app/", wrapper_include([mark_tags("demo tag")], include("app.urls"))),
+]
+```
+
+The `wrapper_include` in the above code will add `mark_tags` decorators to all views configured in the app URLs
+
+You can also use the `wrapper_include` based functionality
+
+```python
+wrapper_include([mark_tags("demo tag"), describe_response(200, "ok")], include("app.urls"))
+```
+
+
+##### To be continue ...
 
 ### Extensions
 
