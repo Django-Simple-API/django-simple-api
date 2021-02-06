@@ -37,7 +37,7 @@ class TestFunctionView(TestCase):
         resp = self.client.get("/test/test-get-func/1", data={"name": "2"})
         self.assertEqual(resp.status_code, 422)
 
-        resp = self.client.post("/test/test-get-func/1")
+        resp = self.client.post("/test/test-get-func/1?name_id=2")
         self.assertEqual(resp.status_code, 405)
 
     def test_success_post(self):

@@ -4,8 +4,11 @@ from inspect import isclass
 from typing import Any, Callable, Dict, List, Type, TypeVar, Union
 
 from django.views import View
+from django.views.decorators.http import require_http_methods
 from pydantic import BaseModel, create_model
 from pydantic.utils import display_as_type
+
+from .extras import describe_extra_docs
 
 if sys.version_info >= (3, 9):
     # https://www.python.org/dev/peps/pep-0585/
@@ -17,6 +20,7 @@ else:
     GenericType = (type(List[str]),)
 
 T = TypeVar("T")
+C = TypeVar("C", bound=Callable)
 
 
 def allow_request_method(method: str) -> Callable[[T], T]:
@@ -31,7 +35,7 @@ def allow_request_method(method: str) -> Callable[[T], T]:
             raise TypeError("Can only be used for functions")
 
         setattr(view_func, "__method__", method.upper())
-        return view_func
+        return require_http_methods([method.upper()])(view_func)
 
     return wrapper
 
@@ -98,3 +102,10 @@ def describe_responses(responses: Dict[int, dict]) -> Callable[[T], T]:
         return func
 
     return decorator
+
+
+def mark_tags(*tags: str) -> Callable[[C], C]:
+    def wrapper(handler: C) -> C:
+        return describe_extra_docs(handler, {"tags": tags})
+
+    return wrapper
