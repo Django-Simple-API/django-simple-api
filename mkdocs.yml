@@ -1,0 +1,30 @@
+site_name: Django Simple API
+site_description: A non-intrusive component that can help you quickly create APIs.
+
+repo_name: Index.py
+repo_url: https://github.com/Django-Simple-API/django-simple-api
+edit_uri: https://github.com/Django-Simple-API/django-simple-api/tree/master/docs/
+
+use_directory_urls: true
+
+theme:
+  name: "material"
+  language: "en"
+  palette:
+    scheme: slate
+    primary: green
+  feature:
+    tabs: true
+
+nav:
+  - Quick Start: "quick-start.md"
+
+markdown_extensions:
+  - markdown.extensions.codehilite:
+      guess_lang: false
+  - admonition
+  - codehilite
+  - extra
+
+plugins:
+  - search

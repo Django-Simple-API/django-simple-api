@@ -29,6 +29,9 @@ flake8 = "*"
 mypy = "*"
 pytest = "^5.4.3"
 
+mkdocs = "*"
+mkdocs-material = "*"
+
 [build-system]
 build-backend = "poetry.masonry.api"
 requires = ["poetry>=0.12"]
