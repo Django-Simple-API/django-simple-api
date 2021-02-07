@@ -11,8 +11,8 @@ theme:
   name: "material"
   language: "en"
   palette:
-    scheme: slate
-    primary: green
+    scheme: default
+    primary: blue
   feature:
     tabs: true
 

@@ -3,7 +3,7 @@
 Download and install from github
 
 ```
-pip install git+https://github.com/abersheeran/django-simple-api.git@setup.py
+pip install git+https://github.com/Django-Simple-API/django-simple-api.git@setup.py
 ```
 
 Or from coding mirror in China
@@ -12,20 +12,97 @@ Or from coding mirror in China
 pip install git+https://e.coding.net/aber/github/django-simple-api.git@setup.py
 ```
 
+## Configure
 Add django-simple-api to your `INSTALLED_APPS` in settings:
 
 ```python
 INSTALLED_APPS = [
-    ...
+    ...,
     "django_simple_api",
 ]
 ```
 
-Add `SimpleApiMiddleware` to your `MIDDLEWARE` in settings:
+Register the middleware to your `MIDDLEWARE` in settings:
 
 ```python
 MIDDLEWARE = [
-    ...
+    ...,
     "django_simple_api.middleware.SimpleApiMiddleware",
 ]
 ```
+
+Add the url of ***django-simple-api*** to your urls.py:
+
+```python
+# urls.py
+
+from django.urls import include, path
+from django.conf import settings
+
+
+# Your urls
+urlpatterns = [
+    ...
+]
+
+# Simple API urls, should only run in a test environment.
+if settings.DEBUG:
+    urlpatterns += [
+        # generate documentation
+        path(
+            "docs/",
+            include("django_simple_api.urls"),
+            {
+                "template_name": "swagger.html",
+                "title": "Django Simple API",
+                "description": "This is description of your interface document.",
+                "version": "0.1.0",
+            },
+        ),
+    ]
+```
+
+## Complete the first example
+Define your url:
+
+```python
+# your urls.py
+
+from django.urls import path
+from yourviews import JustTest
+
+
+urlpatterns = [
+    path("/path/<id:int>/", JustTest.as_view()),
+    ...
+]
+```
+
+Define your view:
+
+```python
+# your views.py
+
+from django.views import View
+from django.http.response import HttpResponse
+
+from django_simple_api import Query
+
+
+class JustTest(View):
+    def get(self, request, id: int = Query()):
+        return HttpResponse(id)
+```
+
+> To generate the document, you must declare the parameters according to the  rules of Simple API's (like the example above).
+
+> Click [Declare parameters](https://www.baidu.com) to see how to declare parameters.
+
+
+
+## Access interface document
+After the above configuration, you can start your server and access the interface documentation now.
+
+If your service is running locally, you can visit ["http://127.0.0.1:8000/docs/"](http://127.0.0.1:8000/docs/) to view your documentation.
+
+
