@@ -1,30 +1,3 @@
-# Django Simple API
-
-A non-intrusive component that can help you quickly create APIs.
-
-## Install
-
-Download and install from github
-
-```
-pip install git+https://github.com/Django-Simple-API/django-simple-api.git@setup.py
-```
-
-Or from coding mirror in China
-
-```
-pip install git+https://e.coding.net/aber/github/django-simple-api.git@setup.py
-```
-
-Add django-simple-api to your `INSTALLED_APPS` in settings:
-
-```python
-INSTALLED_APPS = [
-    ...
-    "django_simple_api",
-]
-```
-
 ## Usage
 
 ⚠️ We support both `view-function` and `class-view` at the same time for all functions. If there is no special description in the document, it means that it is applicable to both views. Where special support is needed, we will indicate how to do it in the document.

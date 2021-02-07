@@ -18,6 +18,9 @@ theme:
 
 nav:
   - Quick Start: "quick-start.md"
+  - Declare Parameters: "declare-parameters.md"
+  - Parameter Verification: "parameter-verification.md"
+  - Document Generation: "document-generation.md"
 
 markdown_extensions:
   - markdown.extensions.codehilite:
