@@ -49,16 +49,7 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += [
         # generate documentation
-        path(
-            "docs/",
-            include("django_simple_api.urls"),
-            {
-                "template_name": "swagger.html",
-                "title": "Django Simple API",
-                "description": "This is description of your interface document.",
-                "version": "0.1.0",
-            },
-        ),
+        path("docs/", include("django_simple_api.urls"))
     ]
 ```
 
