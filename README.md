@@ -1,4 +1,8 @@
-## Install
+## Django Simple API
+A non-intrusive component that can help you quickly create APIs.
+
+### Quick Start
+#### Install
 Download and install from github:
 
 ```
@@ -12,7 +16,7 @@ pip install git+https://e.coding.net/aber/github/django-simple-api.git@setup.py
 ```
 
 
-## Configure
+#### Configure
 Add django-simple-api to your `INSTALLED_APPS` in settings:
 
 ```python
@@ -54,7 +58,7 @@ if settings.DEBUG:
 ```
 
 
-## Complete the first example
+#### Complete the first example
 Define your url:
 
 ```python
@@ -91,7 +95,11 @@ class JustTest(View):
 > Click [Declare parameters](declare-parameters.md) to see how to declare parameters.
 
 
-## Access interface document
+#### Access interface document
 After the above configuration, you can start your server and access the interface documentation now.
 
 If your service is running locally, you can visit [http://127.0.0.1:8000/docs/](http://127.0.0.1:8000/docs/) to view your documentation.
+
+
+## More
+For more tutorials, see [Django Simple API](https://www.baidu.com/).
