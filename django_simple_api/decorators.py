@@ -19,7 +19,7 @@ if sys.version_info >= (3, 9):
 else:
     GenericType = (type(List[str]),)
 
-T = TypeVar("T")
+T = TypeVar("T", bound=Callable)
 
 
 def allow_request_method(method: str) -> Callable[[T], T]:
