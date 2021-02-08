@@ -14,6 +14,10 @@ To help us develop faster, we also extended support for `application/json` reque
 
 
 ## Learn and used
+
+⚠️ We support both view-function and class-view at the same time for all functions. If there is no special description in the document, it means that it is applicable to both views. 
+Where special support is needed, we will indicate how to do it in the document.
+
 [Quick Start](quick-start.md)
 
 [Declare Parameters](declare-parameters.md)
