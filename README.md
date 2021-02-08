@@ -94,7 +94,7 @@ class JustTest(View):
 
 > To generate the document, you must declare the parameters according to the  rules of ***Simple API*** (like the example above).
 >
-> Click [Declare parameters](declare-parameters.md) to see how to declare parameters.
+> Click [Declare parameters](https://django-simple-api.aber.sh/declare-parameters/) to see how to declare parameters.
 
 ### Access interface document
 
