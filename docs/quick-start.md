@@ -1,5 +1,4 @@
 ## Install
-
 Download and install from github:
 
 ```
@@ -11,6 +10,7 @@ Or from coding mirror in China:
 ```
 pip install git+https://e.coding.net/aber/github/django-simple-api.git@setup.py
 ```
+
 
 ## Configure
 Add django-simple-api to your `INSTALLED_APPS` in settings:
@@ -53,6 +53,7 @@ if settings.DEBUG:
     ]
 ```
 
+
 ## Complete the first example
 Define your url:
 
@@ -86,14 +87,11 @@ class JustTest(View):
 ```
 
 > To generate the document, you must declare the parameters according to the  rules of ***Simple API*** (like the example above).
-
+>
 > Click [Declare parameters](declare-parameters.md) to see how to declare parameters.
-
 
 
 ## Access interface document
 After the above configuration, you can start your server and access the interface documentation now.
 
 If your service is running locally, you can visit [http://127.0.0.1:8000/docs/](http://127.0.0.1:8000/docs/) to view your documentation.
-
-
