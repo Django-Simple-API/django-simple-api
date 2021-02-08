@@ -24,7 +24,7 @@ class JustTest(View):
 
 ## Fields
 ***Simple API*** has a total of 6 fields, corresponding to the parameters in different positions:
-##### All fields and description
+### All fields and description
 | Field     | Description |
 | ---       | ---         |
 | Query     | Indicates that this parameter is in the url query string. example: http://host/?param=1|
@@ -34,7 +34,7 @@ class JustTest(View):
 | Header    | Indicates that this parameter is in Header.|
 | Exclusive | This is a special field, its parameter type should be subclass of `pydantic.BaseModel`, it will get all the parameters from the location specified by `Exclusive`.
 
-For example:
+### For example:
 
 ```python
 # urls.py
@@ -61,7 +61,7 @@ class JustTest(View):
             param4: str = Body(),
             userid: int = Cookie(alias="uid"),
             username: int = Cookie(alias="username"),
-            csrf_token: str = Header(alias="X-CSRF-TOKEN"),
+            csrf_token: str = Header(alias="X-Csrf-Token"),
         ):
 
         return HttpResponse(d)

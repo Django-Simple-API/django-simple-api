@@ -25,7 +25,7 @@ if settings.DEBUG:
             include("django_simple_api.urls"),
             {
                 "template_name": "swagger.html",
-                "title": "Django ***Simple API***",
+                "title": "Django Simple API",
                 "description": "This is description of your interface document.",
                 "version": "0.1.0",
             },
@@ -54,7 +54,7 @@ def just_test(request, id: int = Query()):
     return HttpResponse(id)
 ```
 
-`allow_request_method` can only declare one request method, and it must be in `['get', 'post', 'put', 'patch', 'delete', 'head', 'trace']`.
+`allow_request_method` can only declare one request method, and it must be in `['get', 'post', 'put', 'patch', 'delete', 'head', 'options', trace']`.
 We do not support the behavior of using multiple request methods in a `view-function`, which will cause trouble for generating documentation.
 
 Note that if you use `@allow_request_method("get")` to declare a request method, you will not be able to use request methods other than `get`, otherwise it will return `405 Method Not Allow`.
@@ -231,7 +231,7 @@ class JustTest(View):
         return JsonResponse(id)
 ```
 
-**Add `responses` to multiple views simultaneously: [here](https://www.baidu.com/)**
+> Add `responses` to multiple views simultaneously: [wrapper_include](document-generation.md#wrapper_include)
 
 
 ### Add `tags` to the view
@@ -249,13 +249,13 @@ def get_name(request, id: int = Query(...)):
 
 You can use `@mark_tags("tag1", "tag2")` to tag a view with multiple tags
 
-**Add `tags` to multiple views simultaneously: [here](https://www.baidu.com/)**
+> Add `tags` to multiple views simultaneously: [wrapper_include](document-generation.md#wrapper_include)
 
-### Extensions function
+## Extensions function
 
-#### `describe_extra_docs`
+### `describe_extra_docs`
 
-#### `wrapper_include`
+### `wrapper_include`
 
 We also support tagging multiple URLs at the same time
 
@@ -263,7 +263,7 @@ We also support tagging multiple URLs at the same time
 from django_simple_api import wrapper_include, mark_tags
 
 urlpatterns = [
-    ...
+    ...,
     path("app/", wrapper_include([mark_tags("demo tag")], include("app.urls"))),
 ]
 ```
@@ -276,5 +276,5 @@ You can also use the `wrapper_include` based functionality
 wrapper_include([mark_tags("demo tag"), describe_response(200, "ok")], include("app.urls"))
 ```
 
-
-#### To be continue ...
+### Support for JSON requests
+### To be continue ...
