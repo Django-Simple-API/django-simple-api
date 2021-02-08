@@ -1,7 +1,7 @@
 site_name: Django Simple API
 site_description: A non-intrusive component that can help you quickly create APIs.
 
-repo_name: Index.py
+repo_name: django-simple-api
 repo_url: https://github.com/Django-Simple-API/django-simple-api
 edit_uri: https://github.com/Django-Simple-API/django-simple-api/tree/master/docs/
 
