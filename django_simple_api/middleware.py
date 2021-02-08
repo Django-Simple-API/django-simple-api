@@ -63,4 +63,8 @@ class ValidateRequestDataMiddleware(ParseRequestDataMiddleware):
 
 
 class SimpleApiMiddleware(ValidateRequestDataMiddleware):
-    pass
+    """
+    Contains all the functional middleware of Django Simple API. More
+    functions may be added to this middleware at any time. If you only
+    need certain functions, please use other middleware explicitly.
+    """
