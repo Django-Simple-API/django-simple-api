@@ -253,8 +253,6 @@ You can use `@mark_tags("tag1", "tag2")` to tag a view with multiple tags
 
 ## Extensions function
 
-### `describe_extra_docs`
-
 ### `wrapper_include`
 
 We also support tagging multiple URLs at the same time
@@ -276,5 +274,8 @@ You can also use the `wrapper_include` based functionality
 wrapper_include([mark_tags("demo tag"), describe_response(200, "ok")], include("app.urls"))
 ```
 
+### `describe_extra_docs`
+
 ### Support for JSON requests
+
 ### To be continue ...
