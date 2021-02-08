@@ -17,6 +17,7 @@ theme:
     tabs: true
 
 nav:
+  - Homepage: "index.md"
   - Quick Start: "quick-start.md"
   - Declare Parameters: "declare-parameters.md"
   - Parameter Verification: "parameter-verification.md"
