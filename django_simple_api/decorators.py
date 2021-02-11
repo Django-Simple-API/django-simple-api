@@ -19,8 +19,7 @@ if sys.version_info >= (3, 9):
 else:
     GenericType = (type(List[str]),)
 
-T = TypeVar("T")
-C = TypeVar("C", bound=Callable)
+T = TypeVar("T", bound=Callable)
 
 
 def allow_request_method(method: str) -> Callable[[T], T]:
@@ -104,8 +103,12 @@ def describe_responses(responses: Dict[int, dict]) -> Callable[[T], T]:
     return decorator
 
 
-def mark_tags(*tags: str) -> Callable[[C], C]:
-    def wrapper(handler: C) -> C:
+def mark_tags(*tags: str) -> Callable[[T], T]:
+    """
+    mark api tags
+    """
+
+    def wrapper(handler: T) -> T:
         return describe_extra_docs(handler, {"tags": tags})
 
     return wrapper
