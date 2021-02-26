@@ -104,7 +104,14 @@ def _generate_path_docs(handler) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     return {k: v for k, v in result.items() if v}, definitions
 
 
-def get_docs(request, title: str, description: str, version: str, **kwargs: Any):
+def get_docs(
+    request,
+    title: str = "Django Simple API",
+    description: str = "This is description of your interface document.",
+    version: str = "0.1.0",
+    **kwargs: Any,
+):
+
     openapi_docs = {
         "openapi": "3.0.0",
         "info": {"title": title, "description": description, "version": version},
