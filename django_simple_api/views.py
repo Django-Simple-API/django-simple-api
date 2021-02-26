@@ -107,7 +107,7 @@ def _generate_path_docs(handler) -> Tuple[Dict[str, Any], Dict[str, Any]]:
 def get_docs(
     request,
     title: str = "Django Simple API",
-    description: str = "This is description of your interface document.",
+    description: str = "This is description of your API document.",
     version: str = "0.1.0",
     **kwargs: Any,
 ):
