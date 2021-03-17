@@ -3,15 +3,7 @@ from django.http.response import HttpResponse
 from django.views import View
 from pydantic import BaseModel, Field
 
-from django_simple_api import (
-    Body,
-    Cookie,
-    Exclusive,
-    Header,
-    Path,
-    Query,
-    allow_request_method,
-)
+from django_simple_api import Body, Cookie, Header, Path, Query, allow_request_method
 
 
 class JustTest(View):
@@ -70,7 +62,7 @@ class QueryPage(BaseModel):
 
 
 @allow_request_method("get")
-def query_page_by_exclusive(request, page: QueryPage = Exclusive("query")):
+def query_page_by_exclusive(request, page: QueryPage = Query(exclusive=True)):
     return HttpResponse(page.size * (page.num - 1))
 
 

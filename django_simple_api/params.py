@@ -1,8 +1,8 @@
 from inspect import isclass, signature
-from typing import Any, Callable, Dict, List, TypeVar
+from typing import Any, Callable, Dict, List, Type, TypeVar
 
 from django.http.request import HttpRequest
-from pydantic import BaseModel, ValidationError, create_model
+from pydantic import BaseConfig, BaseModel, ValidationError, create_model
 
 from ._fields import FieldInfo
 from .exceptions import RequestValidationError
@@ -11,14 +11,13 @@ from .utils import is_class_view, merge_query_dict
 HTTPHandler = TypeVar("HTTPHandler", bound=Callable)
 
 
-def create_model_config(title: str = None, description: str = None):
-    class ExclusiveModelConfig:
-        @staticmethod
-        def schema_extra(schema, model) -> None:
-            if title is not None:
-                schema["title"] = title
-            if description is not None:
-                schema["description"] = description
+def create_model_config(title: str = None, description: str = None) -> Type[BaseConfig]:
+    class ExclusiveModelConfig(BaseConfig):
+        schema_extra = {
+            k: v
+            for k, v in {"title": title, "description": description}.items()
+            if v is not None
+        }
 
     return ExclusiveModelConfig
 
