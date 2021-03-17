@@ -74,10 +74,10 @@ def _parse_and_bound_params(handler: HTTPHandler) -> HTTPHandler:
         default = param.default
         annotation = param.annotation
 
-        if default == param.empty:
+        if default == param.empty or not isinstance(default, FieldInfo):
             continue
 
-        if isinstance(default, FieldInfo) and getattr(default, "exclusive", False):
+        if getattr(default, "exclusive", False):
             if isclass(annotation) and issubclass(annotation, BaseModel):
                 model = annotation
             else:
