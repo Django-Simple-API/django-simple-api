@@ -1,6 +1,6 @@
 import os
-from subprocess import check_output as shell
 from pathlib import Path
+from subprocess import check_output as shell
 
 commit_id = shell("git rev-parse HEAD").decode("utf8").strip()
 site = Path("site").absolute()

@@ -5,11 +5,11 @@ from .decorators import (
     mark_tags,
 )
 from .extras import describe_extra_docs
-from .fields import Body, Cookie, Exclusive, Header, Path, Query
+from .fields import Body, Cookie, Header, Path, Query
 from .types import UploadFile
 from .utils import wrapper_include, wrapper_urlpatterns
 
-__all__ = ["Path", "Query", "Header", "Cookie", "Body", "Exclusive"]
+__all__ = ["Path", "Query", "Header", "Cookie", "Body"]
 __all__ += [
     "allow_request_method",
     "describe_response",

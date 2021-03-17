@@ -18,10 +18,10 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 
 django = "*"
-pydantic = "^1.7.3"
+pydantic = "^1.8.1"
 
 [tool.poetry.dev-dependencies]
 black = {version = "*", allow-prereleases = true}
@@ -31,6 +31,9 @@ pytest = "^5.4.3"
 
 mkdocs = "*"
 mkdocs-material = "*"
+
+[tool.isort]
+profile = "black"
 
 [build-system]
 build-backend = "poetry.masonry.api"

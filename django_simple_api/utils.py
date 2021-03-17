@@ -1,6 +1,6 @@
 import re
 from functools import update_wrapper
-from typing import Any, Callable, Generator, List, Tuple, Union, TypeVar, Sequence
+from typing import Any, Callable, Generator, List, Sequence, Tuple, TypeVar, Union
 
 from django.conf import settings
 from django.http.request import QueryDict

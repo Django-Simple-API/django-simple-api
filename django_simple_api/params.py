@@ -4,14 +4,7 @@ from typing import Any, Callable, Dict, List, TypeVar
 from django.http.request import HttpRequest
 from pydantic import BaseModel, ValidationError, create_model
 
-from ._fields import (
-    BodyInfo,
-    CookieInfo,
-    ExclusiveInfo,
-    HeaderInfo,
-    PathInfo,
-    QueryInfo,
-)
+from ._fields import FieldInfo
 from .exceptions import RequestValidationError
 from .utils import is_class_view, merge_query_dict
 
@@ -68,29 +61,23 @@ def parse_and_bound_params(handler: Any) -> None:
 def _parse_and_bound_params(handler: HTTPHandler) -> HTTPHandler:
     sig = signature(handler)
 
-    __parameters__ = {}
+    __parameters__: Dict[str, Any] = {
+        "path": {},
+        "query": {},
+        "header": {},
+        "cookie": {},
+        "body": {},
+    }
     __exclusive_models__ = {}
-    path: Dict[str, Any] = {}
-    query: Dict[str, Any] = {}
-    header: Dict[str, Any] = {}
-    cookie: Dict[str, Any] = {}
-    body: Dict[str, Any] = {}
 
     for name, param in sig.parameters.items():
         default = param.default
         annotation = param.annotation
 
-        if isinstance(default, QueryInfo):
-            _type_ = query
-        elif isinstance(default, HeaderInfo):
-            _type_ = header
-        elif isinstance(default, CookieInfo):
-            _type_ = cookie
-        elif isinstance(default, BodyInfo):
-            _type_ = body
-        elif isinstance(default, PathInfo):
-            _type_ = path
-        elif isinstance(default, ExclusiveInfo):
+        if default == param.empty:
+            continue
+
+        if isinstance(default, FieldInfo) and getattr(default, "exclusive", False):
             if isclass(annotation) and issubclass(annotation, BaseModel):
                 model = annotation
             else:
@@ -99,29 +86,31 @@ def _parse_and_bound_params(handler: HTTPHandler) -> HTTPHandler:
                     __config__=create_model_config(default.title, default.description),
                     __root__=(annotation, ...),
                 )
-            __parameters__[default.name] = model
+            __parameters__[default._in] = model
             __exclusive_models__[model] = name
             continue
-        else:
-            continue
 
-        if annotation == param.empty:
-            # If the view used `pydantic.fields` but not used type annotation, throw an exception.
-            raise TypeError(
-                f"The `{name}` parameter of `{handler.__qualname__}` not use type annotations."
-            )
-
-        _type_[name] = (annotation, default)
-
-    __locals__ = locals()
-    for key in filter(
-        lambda key: bool(__locals__[key]), ("path", "query", "header", "cookie", "body")
-    ):
-        if key in __parameters__:
+        if isclass(__parameters__[default._in]) and issubclass(
+            __parameters__[default._in], BaseModel
+        ):
             raise RuntimeError(
-                f'Exclusive("{key}") and {key.capitalize()} cannot be used at the same time'
+                f"{default._in.capitalize()}(exclusive=True) "
+                "and {default._in.capitalize()} cannot be used at the same time"
             )
-        __parameters__[key] = create_model("temporary_model", **locals()[key])  # type: ignore
+
+        if annotation != param.empty:
+            __parameters__[default._in][name] = (annotation, default)
+        else:
+            __parameters__[default._in][name] = default
+
+    for key in (
+        key
+        for key in __parameters__
+        if not (
+            isclass(__parameters__[key]) and issubclass(__parameters__[key], BaseModel)
+        )
+    ):
+        __parameters__[key] = create_model("temporary_model", **__parameters__[key])  # type: ignore
 
     if "body" in __parameters__:
         setattr(handler, "__request_body__", __parameters__.pop("body"))

@@ -15,8 +15,7 @@ Including another URLconf
 """
 from django.urls import include, path
 
-from django_simple_api import mark_tags
-from django_simple_api import wrapper_include
+from django_simple_api import mark_tags, wrapper_include
 
 urlpatterns = [
     # generate documentation
