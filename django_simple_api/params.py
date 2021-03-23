@@ -102,14 +102,11 @@ def _parse_and_bound_params(handler: HTTPHandler) -> HTTPHandler:
         else:
             __parameters__[default._in][name] = default
 
-    for key in (
-        key
-        for key in __parameters__
-        if not (
-            isclass(__parameters__[key]) and issubclass(__parameters__[key], BaseModel)
-        )
-    ):
-        __parameters__[key] = create_model("temporary_model", **__parameters__[key])  # type: ignore
+    for key in tuple(__parameters__.keys()):
+        _params_ = __parameters__.pop(key)
+        if isclass(_params_) and isinstance(_params_, BaseModel) or not _params_:
+            continue
+        __parameters__[key] = create_model("temporary_model", **_params_)  # type: ignore
 
     if "body" in __parameters__:
         setattr(handler, "__request_body__", __parameters__.pop("body"))
