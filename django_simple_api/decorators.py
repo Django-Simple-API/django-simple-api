@@ -43,17 +43,21 @@ def describe_response(
     status: Union[int, HTTPStatus],
     description: str = "",
     *,
-    content: Union[Type[BaseModel], dict] = None,
+    content: Union[Type[BaseModel], dict, type] = None,
     headers: dict = None,
     links: dict = None,
 ) -> Callable[[T], T]:
     """
     Describe a response in HTTP view function
+
     https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#responseObject
     """
     status = int(status)
     if not description:
-        description = HTTPStatus(status).description
+        try:
+            description = HTTPStatus(status).description
+        except ValueError:
+            description = "User-defined status code"
 
     def decorator(func: T) -> T:
         if not hasattr(func, "__responses__"):
