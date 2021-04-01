@@ -77,16 +77,14 @@ def _parse_and_bound_params(handler: HTTPHandler) -> HTTPHandler:
             continue
 
         if getattr(default, "exclusive", False):
-            if isclass(annotation) and issubclass(annotation, BaseModel):
-                model = annotation
-            else:
-                model = create_model(
-                    "temporary_exclusive_model",
-                    __config__=create_model_config(default.title, default.description),
-                    __root__=(annotation, ...),
+            if not (isclass(annotation) and issubclass(annotation, BaseModel)):
+                raise TypeError(
+                    f"The `{name}` parameter of `{handler.__qualname__}` must use type annotations"
+                    f"and the type annotations must be a subclass of BaseModel."
                 )
-            __parameters__[default._in] = model
-            __exclusive_models__[model] = name
+
+            __parameters__[default._in] = annotation
+            __exclusive_models__[annotation] = name
             continue
 
         if isclass(__parameters__[default._in]) and issubclass(
