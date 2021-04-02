@@ -97,9 +97,15 @@ def _parse_and_bound_params(handler: HTTPHandler) -> HTTPHandler:
 
     for key in tuple(__parameters__.keys()):
         _params_ = __parameters__.pop(key)
-        if isclass(_params_) and issubclass(_params_, BaseModel) or not _params_:
+        # _params_ is subclass of BaseModel
+        if isclass(_params_) and issubclass(_params_, BaseModel):
+            __parameters__[key] = _params_
+        # _params_ is have values
+        elif _params_:
+            __parameters__[key] = create_model("temporary_model", **_params_)  # type: ignore
+        # _params_ is empty of dict.
+        else:
             continue
-        __parameters__[key] = create_model("temporary_model", **_params_)  # type: ignore
 
     if "body" in __parameters__:
         setattr(handler, "__request_body__", __parameters__.pop("body"))
@@ -119,12 +125,11 @@ def _verify_params(
     parameters = getattr(handler, "__parameters__", None)
     request_body = getattr(handler, "__request_body__", None)
     exclusive_models = getattr(handler, "__exclusive_models__", {})
-    if not (parameters or request_body):
+    if not (parameters or request_body or exclusive_models):
         return {}
 
     data: List[Any] = []
     kwargs: Dict[str, Any] = {}
-
     try:
         # try to get parameters model and parse
         if parameters:
