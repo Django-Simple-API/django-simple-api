@@ -1,25 +1,14 @@
 from inspect import isclass, signature
-from typing import Any, Callable, Dict, List, Type, TypeVar
+from typing import Any, Callable, Dict, List, TypeVar
 
 from django.http.request import HttpRequest
-from pydantic import BaseConfig, BaseModel, ValidationError, create_model
+from pydantic import BaseModel, ValidationError, create_model
 
 from ._fields import FieldInfo
-from .exceptions import RequestValidationError
+from .exceptions import RequestValidationError, ExclusiveFieldError
 from .utils import is_class_view, merge_query_dict
 
 HTTPHandler = TypeVar("HTTPHandler", bound=Callable)
-
-
-def create_model_config(title: str = None, description: str = None) -> Type[BaseConfig]:
-    class ExclusiveModelConfig(BaseConfig):
-        schema_extra = {
-            k: v
-            for k, v in {"title": title, "description": description}.items()
-            if v is not None
-        }
-
-    return ExclusiveModelConfig
 
 
 def verify_params(
@@ -77,6 +66,12 @@ def _parse_and_bound_params(handler: HTTPHandler) -> HTTPHandler:
             continue
 
         if getattr(default, "exclusive", False):
+            if __parameters__[default._in] != {}:
+                raise ExclusiveFieldError(
+                    f"You used exclusive parameter: `{default._in.capitalize()}(exclusive=True)`,"
+                    f"Please ensure the `{default._in.capitalize()}` field is unique in `{handler.__qualname__}`."
+                )
+
             if not (isclass(annotation) and issubclass(annotation, BaseModel)):
                 raise TypeError(
                     f"The `{name}` parameter of `{handler.__qualname__}` must use type annotations"
@@ -90,9 +85,9 @@ def _parse_and_bound_params(handler: HTTPHandler) -> HTTPHandler:
         if isclass(__parameters__[default._in]) and issubclass(
             __parameters__[default._in], BaseModel
         ):
-            raise RuntimeError(
-                f"{default._in.capitalize()}(exclusive=True) "
-                "and {default._in.capitalize()} cannot be used at the same time"
+            raise ExclusiveFieldError(
+                f"You used exclusive parameter: `{default._in.capitalize()}(exclusive=True)`,"
+                f"Please ensure the `{default._in.capitalize()}` field is unique in `{handler.__qualname__}`."
             )
 
         if annotation != param.empty:

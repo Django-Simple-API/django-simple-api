@@ -5,6 +5,14 @@ from pydantic import ValidationError
 from pydantic.json import pydantic_encoder
 
 
+class ExclusiveFieldError(Exception):
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return self.message
+
+
 class RequestValidationError(Exception):
     def __init__(self, validation_error: ValidationError) -> None:
         self.validation_error = validation_error
