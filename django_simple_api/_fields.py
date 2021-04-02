@@ -9,11 +9,21 @@ else:
 from pydantic.fields import FieldInfo as _FieldInfo
 from pydantic.fields import Undefined
 
+from .exceptions import ExclusiveFieldError
+
 
 class FieldInfo(_FieldInfo):
     __slots__ = _FieldInfo.__slots__
 
     _in: Literal["path", "query", "header", "cookie", "body"]
+
+    def __init__(self, default: Any = Undefined, **kwargs: Any) -> None:
+        self.exclusive = kwargs.pop("exclusive")
+        if self.exclusive and any(kwargs.values()):
+            raise ExclusiveFieldError(
+                "The `exclusive` parameter cannot be used with other parameters at the same time."
+            )
+        super().__init__(default, **kwargs)
 
 
 class PathInfo(FieldInfo):
@@ -21,19 +31,11 @@ class PathInfo(FieldInfo):
 
     _in: Literal["path"] = "path"
 
-    def __init__(self, default: Any = Undefined, **kwargs: Any) -> None:
-        self.exclusive = kwargs.pop("exclusive")
-        super().__init__(default, **kwargs)
-
 
 class QueryInfo(FieldInfo):
     __slots__ = ("exclusive", *FieldInfo.__slots__)
 
     _in: Literal["query"] = "query"
-
-    def __init__(self, default: Any = Undefined, **kwargs: Any) -> None:
-        self.exclusive = kwargs.pop("exclusive")
-        super().__init__(default, **kwargs)
 
 
 class HeaderInfo(FieldInfo):
@@ -41,26 +43,14 @@ class HeaderInfo(FieldInfo):
 
     _in: Literal["header"] = "header"
 
-    def __init__(self, default: Any = Undefined, **kwargs: Any) -> None:
-        self.exclusive = kwargs.pop("exclusive")
-        super().__init__(default, **kwargs)
-
 
 class CookieInfo(FieldInfo):
     __slots__ = ("exclusive", *FieldInfo.__slots__)
 
     _in: Literal["cookie"] = "cookie"
 
-    def __init__(self, default: Any = Undefined, **kwargs: Any) -> None:
-        self.exclusive = kwargs.pop("exclusive")
-        super().__init__(default, **kwargs)
-
 
 class BodyInfo(FieldInfo):
     __slots__ = ("exclusive", *FieldInfo.__slots__)
 
     _in: Literal["body"] = "body"
-
-    def __init__(self, default: Any = Undefined, **kwargs: Any) -> None:
-        self.exclusive = kwargs.pop("exclusive")
-        super().__init__(default, **kwargs)
