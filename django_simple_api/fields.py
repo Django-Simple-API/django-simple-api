@@ -8,13 +8,13 @@ __all__ = ["Path", "Query", "Header", "Cookie", "Body"]
 
 
 def Path(
-    default: Any = Undefined,
+    exclusive: bool = False,
     *,
+    default: Any = Undefined,
     default_factory: Optional[NoArgAnyCallable] = None,
     alias: str = None,
     title: str = None,
     description: str = None,
-    exclusive: bool = False,
     **extra: Any,
 ) -> Any:
     """
@@ -44,13 +44,13 @@ def Path(
 
 
 def Query(
-    default: Any = Undefined,
+    exclusive: bool = False,
     *,
+    default: Any = Undefined,
     default_factory: Optional[NoArgAnyCallable] = None,
     alias: str = None,
     title: str = None,
     description: str = None,
-    exclusive: bool = False,
     **extra: Any,
 ) -> Any:
     """
@@ -80,13 +80,13 @@ def Query(
 
 
 def Header(
-    default: Any = Undefined,
+    exclusive: bool = False,
     *,
+    default: Any = Undefined,
     default_factory: Optional[NoArgAnyCallable] = None,
     alias: str = None,
     title: str = None,
     description: str = None,
-    exclusive: bool = False,
     **extra: Any,
 ) -> Any:
     """
@@ -116,13 +116,13 @@ def Header(
 
 
 def Cookie(
-    default: Any = Undefined,
+    exclusive: bool = False,
     *,
+    default: Any = Undefined,
     default_factory: Optional[NoArgAnyCallable] = None,
     alias: str = None,
     title: str = None,
     description: str = None,
-    exclusive: bool = False,
     **extra: Any,
 ) -> Any:
     """
@@ -152,13 +152,13 @@ def Cookie(
 
 
 def Body(
-    default: Any = Undefined,
+    exclusive: bool = False,
     *,
+    default: Any = Undefined,
     default_factory: Optional[NoArgAnyCallable] = None,
     alias: str = None,
     title: str = None,
     description: str = None,
-    exclusive: bool = False,
     **extra: Any,
 ) -> Any:
     """

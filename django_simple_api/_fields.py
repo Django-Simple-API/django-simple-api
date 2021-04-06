@@ -21,7 +21,7 @@ class FieldInfo(_FieldInfo):
         self.exclusive = kwargs.pop("exclusive")
         if self.exclusive and any(kwargs.values()):
             raise ExclusiveFieldError(
-                "The `exclusive` parameter cannot be used with other parameters at the same time."
+                "The `exclusive=True` parameter cannot be used with other parameters at the same time."
             )
         super().__init__(default, **kwargs)
 
