@@ -157,8 +157,6 @@ def _verify_params(
     for _data in data:
         if _data.__class__.__name__ == "temporary_model":
             kwargs.update(_data.dict())
-        elif _data.__class__.__name__ == "temporary_exclusive_model":
-            kwargs[exclusive_models[_data.__class__]] = _data.__root__
         else:
             kwargs[exclusive_models[_data.__class__]] = _data
 
