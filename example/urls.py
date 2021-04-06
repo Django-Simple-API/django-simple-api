@@ -19,16 +19,7 @@ from django_simple_api import mark_tags, wrapper_include
 
 urlpatterns = [
     # generate documentation
-    path(
-        "docs/",
-        include("django_simple_api.urls"),
-        {
-            "template_name": "swagger.html",
-            "title": "Title",
-            "description": "description",
-            "version": "version",
-        },
-    ),
+    path("docs/", include("django_simple_api.urls")),
     # unit test
     path("test/", wrapper_include([mark_tags("unit test")], include("tests.urls"))),
 ]
