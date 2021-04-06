@@ -154,6 +154,7 @@ def _verify_params(
     except ValidationError as e:
         raise RequestValidationError(e)
 
+    # Update the verified parameters into the view into the parameters.
     for _data in data:
         if _data.__class__.__name__ == "temporary_model":
             kwargs.update(_data.dict())
