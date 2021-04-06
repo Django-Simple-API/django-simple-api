@@ -29,9 +29,7 @@ def get_func(request, name: str = Path(), name_id: str = Query()):
 
 
 @allow_request_method("post")
-def post_func(
-    request, name: str = Path(), token: str = Header(alias="Authorization")
-):
+def post_func(request, name: str = Path(), token: str = Header(alias="Authorization")):
     return HttpResponse(name + token)
 
 

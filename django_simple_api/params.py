@@ -68,13 +68,13 @@ def _parse_and_bound_params(handler: HTTPHandler) -> HTTPHandler:
         if getattr(default, "exclusive", False):
             if __parameters__[default._in] != {}:
                 raise ExclusiveFieldError(
-                    f"You used exclusive parameter: `{default._in.capitalize()}(exclusive=True)`,"
+                    f"You used exclusive parameter: `{default._in.capitalize()}(exclusive=True)`, "
                     f"Please ensure the `{default._in.capitalize()}` field is unique in `{handler.__qualname__}`."
                 )
 
             if not (isclass(annotation) and issubclass(annotation, BaseModel)):
                 raise TypeError(
-                    f"The `{name}` parameter of `{handler.__qualname__}` must use type annotations"
+                    f"The `{name}` parameter of `{handler.__qualname__}` must use type annotations "
                     f"and the type annotations must be a subclass of BaseModel."
                 )
 
@@ -86,7 +86,7 @@ def _parse_and_bound_params(handler: HTTPHandler) -> HTTPHandler:
             __parameters__[default._in], BaseModel
         ):
             raise ExclusiveFieldError(
-                f"You used exclusive parameter: `{default._in.capitalize()}(exclusive=True)`,"
+                f"You used exclusive parameter: `{default._in.capitalize()}(exclusive=True)`, "
                 f"Please ensure the `{default._in.capitalize()}` field is unique in `{handler.__qualname__}`."
             )
 
