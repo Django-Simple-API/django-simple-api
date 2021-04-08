@@ -49,6 +49,8 @@ class TestParameterDeclare:
                 == "The `p1` parameter of `just_view_1` must use type annotations and "
                 "the type annotations must be a subclass of BaseModel."
             )
+        else:
+            raise AssertionError("Expected exception did not occur!")
 
     def test_parameter_declare_2(self):
         try:
@@ -59,6 +61,8 @@ class TestParameterDeclare:
                 == "The `p1` parameter of `just_view_2` must use type annotations and "
                 "the type annotations must be a subclass of BaseModel."
             )
+        else:
+            raise AssertionError("Expected exception did not occur!")
 
     def test_parameter_declare_3(self):
         try:
@@ -68,6 +72,8 @@ class TestParameterDeclare:
                 str(e) == "You used exclusive parameter: `Query(exclusive=True)`, "
                 "Please ensure the `Query` field is unique in `just_view_3`."
             )
+        else:
+            raise AssertionError("Expected exception did not occur!")
 
     def test_parameter_declare_4(self):
         try:
@@ -77,6 +83,8 @@ class TestParameterDeclare:
                 str(e) == "You used exclusive parameter: `Query(exclusive=True)`, "
                 "Please ensure the `Query` field is unique in `just_view_4`."
             )
+        else:
+            raise AssertionError("Expected exception did not occur!")
 
     def test_parameter_declare_5(self):
         try:
@@ -86,3 +94,5 @@ class TestParameterDeclare:
                 str(e)
                 == "The `exclusive=True` parameter cannot be used with other parameters at the same time."
             )
+        else:
+            raise AssertionError("Expected exception did not occur!")
