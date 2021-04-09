@@ -34,7 +34,9 @@ class ParseRequestDataMiddleware(MiddlewareMixin):
                 request.method = "POST"
                 request._load_post_and_files()
                 request.method = _shadow
-            request.DATA = merge_query_dict(request.POST)
+            request.DATA = dict(
+                **merge_query_dict(request.POST), **merge_query_dict(request.FILES)
+            )
 
 
 class ValidateRequestDataMiddleware(ParseRequestDataMiddleware):
