@@ -10,7 +10,7 @@ class JustTest(View):
     def get(
         self,
         request: HttpRequest,
-        id: int = Path(..., description="This is description of id."),
+        id: int = Path(description="This is description of id."),
     ) -> HttpResponse:
         """
         This is summary.
@@ -19,39 +19,37 @@ class JustTest(View):
         """
         return HttpResponse(id)
 
-    def post(self, request, id: int = Path(...), name_id: int = Body(...)):
+    def post(self, request, id: int = Path(), name_id: int = Body()):
         return HttpResponse(id + name_id)
 
 
 @allow_request_method("get")
-def get_func(request, name: str = Path(...), name_id: str = Query(...)):
+def get_func(request, name: str = Path(), name_id: str = Query()):
     return HttpResponse(name + name_id)
 
 
 @allow_request_method("post")
-def post_func(
-    request, name: str = Path(...), token: str = Header(..., alias="Authorization")
-):
+def post_func(request, name: str = Path(), token: str = Header(alias="Authorization")):
     return HttpResponse(name + token)
 
 
 @allow_request_method("put")
-def put_func(request, id: int = Path(1), name: str = Body("2")):
+def put_func(request, id: int = Path(default=1), name: str = Body(default="2")):
     assert isinstance(id, int), "params type error"
     assert isinstance(name, str), "params type error"
     return HttpResponse(str(id) + name)
 
 
 @allow_request_method("delete")
-def test_delete_func(request, id: int = Path(...), session_id: str = Cookie(...)):
+def test_delete_func(request, id: int = Path(), session_id: str = Cookie()):
     return HttpResponse(str(id) + session_id)
 
 
 @allow_request_method("get")
 def query_page(
     request,
-    page_size: int = Query(10, alias="page-size"),
-    page_num: int = Query(1, alias="page-num"),
+    page_size: int = Query(default=10, alias="page-size"),
+    page_num: int = Query(default=1, alias="page-num"),
 ):
     return HttpResponse(page_size * (page_num - 1))
 
