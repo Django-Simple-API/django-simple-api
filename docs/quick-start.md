@@ -66,7 +66,7 @@ from yourviews import JustTest
 
 urlpatterns = [
     ...,
-    path("/path/<id:int>/", JustTest.as_view()),
+    path("/path/<int:id>/", JustTest.as_view()),
 ]
 ```
 
