@@ -36,13 +36,19 @@ def just_test_view_4(
 
 class TestParameterDeclare:
     def test_parameter_declare_1(self):
-        with pytest.raises(TypeError, match="The `p1` parameter of `just_test_view_1` must use type annotations and "
-                                            "the type annotations must be a subclass of BaseModel."):
+        with pytest.raises(
+            TypeError,
+            match="The `p1` parameter of `just_test_view_1` must use type annotations and "
+            "the type annotations must be a subclass of BaseModel.",
+        ):
             parse_and_bound_params(just_test_view_1)
 
     def test_parameter_declare_2(self):
-        with pytest.raises(TypeError, match="The `p1` parameter of `just_test_view_2` must use type annotations and "
-                                            "the type annotations must be a subclass of BaseModel."):
+        with pytest.raises(
+            TypeError,
+            match="The `p1` parameter of `just_test_view_2` must use type annotations and "
+            "the type annotations must be a subclass of BaseModel.",
+        ):
             parse_and_bound_params(just_test_view_2)
 
     def test_parameter_declare_3(self):
@@ -62,8 +68,10 @@ class TestParameterDeclare:
         )
 
     def test_parameter_declare_5(self):
-        with pytest.raises(ExclusiveFieldError,
-                           match="The `exclusive=True` parameter cannot be used with other parameters at the same time."):
+        with pytest.raises(
+            ExclusiveFieldError,
+            match="The `exclusive=True` parameter cannot be used with other parameters at the same time.",
+        ):
 
             def just_test_view(
                 request,

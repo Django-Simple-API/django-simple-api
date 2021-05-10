@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from django.test import TestCase
 
 
@@ -135,3 +137,36 @@ class TestCommonView(TestCase):
     def test_class_view_failed(self):
         resp = self.client.put("/test/test-common-class-view")
         self.assertEqual(resp.status_code, 405)
+
+
+class TestUpload(TestCase):
+    def test_upload_file_failed(self):
+        resp = self.client.post(
+            "/test/test-upload-file-view", data={"file": "file"}
+        )
+        self.assertEqual(resp.status_code, 422)
+
+    def test_upload_file_success(self):
+        file_path = Path(__file__).resolve(strict=True).parent / "洛神赋.md"
+        with open(file_path, "rb") as file:
+            resp = self.client.post(
+                "/test/test-upload-file-view", data={"file": file}
+            )
+            self.assertEqual(resp.status_code, 200)
+
+    def test_upload_image_failed(self):
+        file_path = Path(__file__).resolve(strict=True).parent / "洛神赋.md"
+        with open(file_path, "rb") as file:
+            resp = self.client.post(
+                "/test/test-upload-image-view", data={"image": file}
+            )
+            self.assertEqual(resp.status_code, 422)
+
+    def test_upload_image_success(self):
+        image_path = Path(__file__).resolve(strict=True).parent / "Python39.png"
+
+        with open(image_path, "rb") as image:
+            resp = self.client.post(
+                "/test/test-upload-image-view", data={"image": image}
+            )
+            self.assertEqual(resp.status_code, 200)

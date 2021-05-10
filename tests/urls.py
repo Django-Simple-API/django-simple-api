@@ -17,4 +17,6 @@ urlpatterns = [
     path("test-common-func-view", views.test_common_func_view),
     path("test-common-func-view/<id>", views.test_common_path_func_view),
     path("test-common-class-view", views.CommonClassView.as_view()),
+    path("test-upload-file-view", views.TestUploadFile.as_view()),
+    path("test-upload-image-view", views.TestUploadImage.as_view()),
 ]

@@ -3,7 +3,16 @@ from django.http.response import HttpResponse
 from django.views import View
 from pydantic import BaseModel, Field
 
-from django_simple_api import Body, Cookie, Header, Path, Query, allow_request_method
+from django_simple_api import (
+    Body,
+    Cookie,
+    Header,
+    Path,
+    Query,
+    allow_request_method,
+    UploadFile,
+)
+from django_simple_api.types import UploadImage
 
 
 class JustTest(View):
@@ -83,3 +92,13 @@ class CommonClassView(View):
     def post(self, request):
         name = request.POST.get("name", "")
         return HttpResponse(name)
+
+
+class TestUploadFile(View):
+    def post(self, request, file: UploadFile = Body()):
+        return HttpResponse(file.name)
+
+
+class TestUploadImage(View):
+    def post(self, request, image: UploadImage = Body()):
+        return HttpResponse(image.name)
