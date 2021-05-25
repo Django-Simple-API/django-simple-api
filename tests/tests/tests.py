@@ -39,6 +39,9 @@ class TestFunctionView(TestCase):
         resp = self.client.get("/test/test-get-func/1", data={"name": "2"})
         self.assertEqual(resp.status_code, 422)
 
+        resp = self.client.post("/test/test-get-func/1")
+        self.assertEqual(resp.status_code, 405)
+
         resp = self.client.post("/test/test-get-func/1?name_id=2")
         self.assertEqual(resp.status_code, 405)
 
@@ -141,17 +144,13 @@ class TestCommonView(TestCase):
 
 class TestUpload(TestCase):
     def test_upload_file_failed(self):
-        resp = self.client.post(
-            "/test/test-upload-file-view", data={"file": "file"}
-        )
+        resp = self.client.post("/test/test-upload-file-view", data={"file": "file"})
         self.assertEqual(resp.status_code, 422)
 
     def test_upload_file_success(self):
         file_path = Path(__file__).resolve(strict=True).parent / "洛神赋.md"
         with open(file_path, "rb") as file:
-            resp = self.client.post(
-                "/test/test-upload-file-view", data={"file": file}
-            )
+            resp = self.client.post("/test/test-upload-file-view", data={"file": file})
             self.assertEqual(resp.status_code, 200)
 
     def test_upload_image_failed(self):

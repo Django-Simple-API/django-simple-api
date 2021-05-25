@@ -3,7 +3,11 @@ from http import HTTPStatus
 from typing import Any, Callable, Dict, List, Optional
 
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse, HttpResponseBadRequest
+from django.http.response import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseNotAllowed,
+)
 from django.utils.deprecation import MiddlewareMixin
 
 from .exceptions import RequestValidationError
@@ -47,6 +51,13 @@ class ValidateRequestDataMiddleware(ParseRequestDataMiddleware):
         view_args: List[Any],
         view_kwargs: Dict[str, Any],
     ) -> Optional[HttpResponse]:
+
+        # Put request method check before request parameters check.
+        if hasattr(view_func, "__method__") and not (
+            getattr(view_func, "__method__", None) == request.method.upper()
+        ):
+            return HttpResponseNotAllowed([view_func.__method__])  # type: ignore
+
         try:
             view_kwargs.update(verify_params(view_func, request, view_kwargs))
             return None
