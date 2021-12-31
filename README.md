@@ -9,13 +9,7 @@ A non-intrusive component that can help you quickly create APIs.
 Download and install from github:
 
 ```
-pip install git+https://github.com/Django-Simple-API/django-simple-api.git@setup.py
-```
-
-Or from coding mirror in China:
-
-```
-pip install git+https://e.coding.net/aber/github/django-simple-api.git@setup.py
+pip install django-simple-api
 ```
 
 ### Configure
@@ -69,7 +63,6 @@ Define your url:
 from django.urls import path
 from yourviews import JustTest
 
-
 urlpatterns = [
     ...,
     path("/path/<int:id>/", JustTest.as_view()),
@@ -100,7 +93,8 @@ class JustTest(View):
 
 After the above configuration, you can start your server and access the interface documentation now.
 
-If your service is running locally, you can visit [http://127.0.0.1:8000/docs/](http://127.0.0.1:8000/docs/) to view your documentation.
+If your service is running locally, you can visit [http://127.0.0.1:8000/docs/](http://127.0.0.1:8000/docs/) to view
+your documentation.
 
 ## More
 
