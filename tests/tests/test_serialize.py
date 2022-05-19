@@ -10,10 +10,8 @@ class TestSerialize(TestCase):
 
     def test_serialize_model(self):
         user = User.objects.get(username='Zhang')
-        r = user.to_json()
         assert isinstance(user.to_json(), dict)
 
     def test_serialize_queryset(self):
         users = User.objects.filter(username='Li')
-        rs = users.to_json()
-        assert isinstance(rs, list)
+        assert isinstance(users.to_json(), list)
