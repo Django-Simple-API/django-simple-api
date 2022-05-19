@@ -63,7 +63,7 @@ class JustTest(View):
             csrf_token: str = Header(alias="X-Csrf-Token"),
         ):
 
-        return HttpResponse(d)
+        return HttpResponse(username)
 ```
 
 > ⚠️ In the above example, you have two things to note:
