@@ -13,5 +13,6 @@ class TestSerialize(TestCase):
         assert isinstance(user.to_json(), dict)
 
     def test_serialize_queryset(self):
-        users = User.objects.filter(username='Li')
+        users = User.objects.filter(username='Zhang')
         assert isinstance(users.to_json(), list)
+        assert isinstance(users.to_json()[0], dict)
