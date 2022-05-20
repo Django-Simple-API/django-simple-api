@@ -5,12 +5,12 @@
 
 它不是一个类似于 DRF 的框架，它只是一个基于 Django 的轻量级插件，非常易于学习和使用。
 
-它有 4 个核心功能：
+它有 2 个核心功能：
 
 * 自动生成接口文件(OpenAPI)
 * 自动校验请求参数
-* 自动支持 `application/json` 请求类型
-* 为 `Model``QuerySet` 拓展序列化方法
+
+此外，还实现了自动支持 `application/json` 请求类型，以及为 `Model`、`QuerySet` 拓展了序列化方法。
 
 ## 学习和使用
 
