@@ -1,14 +1,14 @@
-## Install
+## 安装
 
-Download and install from github:
+从 github 下载并安装：
 
-```
+```shell
 pip install django-simple-api
 ```
 
-## Configure
+## 配置
 
-Add django-simple-api to your `INSTALLED_APPS` in settings:
+第一步：将 `django-simple-api` 添加到 `settings.INSTALLED_APPS` 中：
 
 ```python
 INSTALLED_APPS = [
@@ -17,7 +17,7 @@ INSTALLED_APPS = [
 ]
 ```
 
-Register the middleware to your `MIDDLEWARE` in settings:
+第二步：将中间件注册到 `settings.MIDDLEWARE` 中：
 
 ```python
 MIDDLEWARE = [
@@ -26,7 +26,7 @@ MIDDLEWARE = [
 ]
 ```
 
-Add the url of ***django-simple-api*** to your urls.py:
+第三步：将 `django-simple-api` 的 url 添加到根 urls.py 中：
 
 ```python
 # urls.py
@@ -34,22 +34,22 @@ Add the url of ***django-simple-api*** to your urls.py:
 from django.urls import include, path
 from django.conf import settings
 
-# Your urls
+# 根 urls
 urlpatterns = [
     ...
 ]
 
-# Simple API urls, should only run in a test environment.
+# dsa 的 urls, 应该只在测试环境运行！
 if settings.DEBUG:
     urlpatterns += [
-        # generate documentation
+        # 接口文档 url
         path("docs/", include("django_simple_api.urls"))
     ]
 ```
 
-## Complete the first example
+## 完成第一个示例
 
-Define your url:
+首先，定义一个路由:
 
 ```python
 # your urls.py
@@ -63,7 +63,7 @@ urlpatterns = [
 ]
 ```
 
-Define your view:
+然后定义一个视图:
 
 ```python
 # your views.py
@@ -79,13 +79,13 @@ class JustTest(View):
         return HttpResponse(id)
 ```
 
-> To generate the document, you must declare the parameters according to the  rules of ***Simple API*** (like the example above).
+> 注意，要生成文档，必须使用 `django-simple-api`  的规则声明参数(如上图所示)！
 >
-> Click [Declare parameters](declare-parameters.md) to see how to declare parameters.
+> 点击 [声明参数](declare-parameters.md) 查看如何声明参数。
 
-## Access interface document
+## 访问接口文档
 
-After the above configuration, you can start your server and access the interface documentation now.
+完成上述配置和示例后，现在就可以启动服务器并访问接口文档了。
 
-If your service is running locally, you can visit [http://127.0.0.1:8000/docs/](http://127.0.0.1:8000/docs/) to view
-your documentation.
+如果你的服务在本地运行，可以访问 [http://127.0.0.1:8000/docs/](http://127.0.0.1:8000/docs/) 来查看接口文档。
+
