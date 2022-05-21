@@ -95,6 +95,6 @@ class JustTest(View):
 
 如果你的服务在本地运行，可以访问 [http://127.0.0.1:8000/docs/](http://127.0.0.1:8000/docs/) 来查看接口文档。
 
-## More
+## 详细教程
 
 更多详细教程, 请查看 [Django Simple API](https://django-simple-api.aber.sh/).
