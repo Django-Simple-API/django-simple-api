@@ -1,4 +1,4 @@
-Language: [English](README.md) | Chinese
+**Language: [English](README.md) | Chinese**
 
 # Django Simple API
 ***Django Simple API*** 是基于 Django 的一个非侵入式组件，可以帮助您快速创建 API。
@@ -97,4 +97,4 @@ class JustTest(View):
 
 ## 详细教程
 
-更多详细教程, 请查看 [Django Simple API](https://django-simple-api.aber.sh/).
+更多详细教程, 请查看 [Django Simple API](https://django-simple-api.aber.sh/)。

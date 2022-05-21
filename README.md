@@ -1,4 +1,4 @@
-Language: English | [Chinese](README.zh-CN.md)
+**Language: English | [Chinese](README.zh-CN.md)**
 
 # Django Simple API
 
