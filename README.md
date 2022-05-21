@@ -1,3 +1,5 @@
+Language: English | [Chinese](README.zh-CN.md)
+
 # Django Simple API
 
 A non-intrusive component that can help you quickly create APIs.
@@ -85,7 +87,7 @@ class JustTest(View):
         return HttpResponse(id)
 ```
 
-> To generate the document, you must declare the parameters according to the  rules of ***Simple API*** (like the example above).
+> ⚠️ To generate the document, you must declare the parameters according to the  rules of ***Simple API*** (like the example above).
 >
 > Click [Declare parameters](https://django-simple-api.aber.sh/declare-parameters/) to see how to declare parameters.
 
