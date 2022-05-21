@@ -1,4 +1,11 @@
-## 安装
+**Language: [English](README.md) | Chinese**
+
+# Django Simple API
+***Django Simple API*** 是基于 Django 的一个非侵入式组件，可以帮助您快速创建 API。
+
+## 快速开始
+
+### 安装
 
 从 github 下载并安装：
 
@@ -6,7 +13,7 @@
 pip install django-simple-api
 ```
 
-## 配置
+### 配置
 
 第一步：将 `django-simple-api` 添加到 `settings.INSTALLED_APPS` 中：
 
@@ -47,7 +54,7 @@ if settings.DEBUG:
     ]
 ```
 
-## 完成第一个示例
+### 完成第一个示例
 
 首先，定义一个路由:
 
@@ -78,14 +85,16 @@ class JustTest(View):
     def get(self, request, id: int = Query()):
         return HttpResponse(id)
 ```
-
-> 注意，要生成文档，必须使用 `django-simple-api`  的规则声明参数(如上图所示)！
+> ⚠️ 注意：要生成文档，必须使用 `django-simple-api`  的规则声明参数(如上图所示)！
 >
 > 点击 [声明参数](declare-parameters.md) 查看如何声明参数。
 
-## 访问接口文档
+### 访问接口文档
 
 完成上述配置和示例后，现在就可以启动服务器并访问接口文档了。
 
 如果你的服务在本地运行，可以访问 [http://127.0.0.1:8000/docs/](http://127.0.0.1:8000/docs/) 来查看接口文档。
 
+## 详细教程
+
+更多详细教程, 请查看 [Django Simple API](https://django-simple-api.aber.sh/)。

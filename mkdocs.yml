@@ -17,11 +17,12 @@ theme:
     tabs: true
 
 nav:
-  - Homepage: "index.md"
-  - Quick Start: "quick-start.md"
-  - Declare Parameters: "declare-parameters.md"
-  - Parameter Verification: "parameter-verification.md"
-  - Document Generation: "document-generation.md"
+  - 首页: "index.md"
+  - 快速开始: "quick-start.md"
+  - 参数声明: "declare-parameters.md"
+  - 参数校验: "parameter-verification.md"
+  - 文档生成: "document-generation.md"
+  - 扩展功能: "extensions-function.md"
 
 markdown_extensions:
   - admonition

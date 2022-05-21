@@ -1,27 +1,30 @@
 # Django Simple API
 
-## About Us
-***Django Simple API*** is a non-intrusive component that can help you quickly create APIs.
+## 关于
+***Django Simple API*** 是一个非侵入式组件，可以帮助您快速创建 API。
 
-It's not an API framework, it's just a lightweight Django-based plugin that's very easy to learn and use.
+它不是一个类似于 DRF 的框架，它只是一个基于 Django 的轻量级插件，非常易于学习和使用。
 
-It has two core functions:
+它有 2 个核心功能：
 
-* Automatic generation of interface documents
-* Automatic validation of request parameters
+* 自动生成接口文件(OpenAPI)
+* 自动校验请求参数
 
-To help us develop faster, we also extended support for `application/json` requests and provided some useful utility functions.
+此外，还实现了自动支持 `application/json` 请求类型，以及为 `Model`、`QuerySet` 拓展了序列化方法。
+
+## 学习和使用
+
+⚠️ 此库的所有功能默认支持`函数视图`和`类视图`。如果文档中没有特别说明，则表示这两种视图都适用，如果需要特殊支持，我们会在文档中说明如何做。
+
+[快速开始](quick-start.md)
+
+[声明参数](declare-parameters.md)
+
+[参数验证](parameter-verification.md)
+
+[生成文档](document-generation.md)
+
+[扩展功能](extensions-function.md)
 
 
-## Learn and used
 
-⚠️ We support both view-function and class-view at the same time for all functions. If there is no special description in the document, it means that it is applicable to both views. 
-Where special support is needed, we will indicate how to do it in the document.
-
-[Quick Start](quick-start.md)
-
-[Declare Parameters](declare-parameters.md)
-
-[Parameter Verification](parameter-verification.md)
-
-[Document Generation](document-generation.md)
