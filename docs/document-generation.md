@@ -1,8 +1,8 @@
-**Hints:**
-If you want to automatically generate interface documentation, you must add the url of ***Simple API*** to your urls.py, See [Quick Start](quick-start.md).
+**提示：**
+如果要自动生成接口文档，必须将 `django-simple-api` 的 url 添加到你的根 urls.py 中，参考 [快速入门](quick-start.md)。
 
-## Modify the interface document description information
-You can modify the interface document description information in the url of `Simple API`, like this:
+## 修改接口文档描述信息
+你可以在添加 url 的地方修改接口文档中的描述信息，如下：
 
 ```python
 # urls.py
@@ -11,15 +11,15 @@ from django.urls import include, path
 from django.conf import settings
 
 
-# Your urls
+# 根 urls
 urlpatterns = [
     ...
 ]
 
-# Simple API urls, should only run in a test environment.
+# dsa 的 urls, 应该只在测试环境运行！
 if settings.DEBUG:
     urlpatterns += [
-        # generate documentation
+        # # 接口文档 url
         path(
             "docs/",
             include("django_simple_api.urls"),
@@ -33,17 +33,15 @@ if settings.DEBUG:
     ]
 ```
 
-In the above example, you can modify the `template_name` to change the UI theme of the interface document, We currently have two UI themes: `swagger.html` and `redoc.html`.
+在上述示例中，你可以修改 `template_name` 来改变界面文档的 UI 主题，我们目前有两个 UI 主题：swagger.html 和 redoc.html。
 
-And then you can modify `title`、`description` and `version` to describe your interface documentation.
+然后你可以通过 `title`、`description` 和 `version` 来修改接口文档的标题、描述和版本。
 
 
-## Generate documentation for `function-view`
-If you are using `class-view`, you can now generate documentation. 
-Start your service, if your service is running locally, you can visit [http://127.0.0.1:8000/docs/](http://127.0.0.1:8000/docs/) to view your documentation.
+## 使用函数视图生成接口文档
+如果你正在使用的是类视图，那你不需要这一步，你可以直接启动服务，查看接口文档了。
 
-But if you are using `view-function`, you must declare the request method supported by the view function:
-
+但是如果使用函数视图，则必须声明函数视图支持的请求方法：
 ```python
 # views.py
 
@@ -54,26 +52,23 @@ def just_test(request, id: int = Query()):
     return HttpResponse(id)
 ```
 
-`allow_request_method` can only declare one request method, and it must be in `['get', 'post', 'put', 'patch', 'delete', 'head', 'options', trace']`.
-We do not support the behavior of using multiple request methods in a `view-function`, which will cause trouble for generating documentation.
+`@allow_request_method` 只能声明一种请求方法，并且必须是 `['get', 'post', 'put', 'patch', 'delete', 'head', 'options', trace']` 中的一种。
 
-Note that if you use `@allow_request_method("get")` to declare a request method, you will not be able to use request methods other than `get`, otherwise it will return `405 Method Not Allow`.
+同一个视图函数不支持多次使用 `@allow_request_method`，每个请求方法应该有一个单独的视图函数来支持，否则我们无法知晓这个视图函数的参数，是用于 `get` 方法还是 `post` 方法。
 
-You can also not use `allow_request_method`, this will not have any negative effects, but it will not generate documentation.
-We will use `warning.warn()` to remind you, this is not a problem, just to prevent you from forgetting to use it.
+注意，如果使用 `@allow_request_method("get")`，则不能使用除 `get` 以外的请求方法，否则会返回 `405 Method Not Allow` 错误。
 
-Now, the `view-function` can also generate documents, you can continue to visit your server to view the effect.
+你也可以不使用 `@allow_request_method`，这不会产生任何负面影响，只是无法生成文档。
+如果你没有在函数视图上使用 `@allow_request_method`，我们会用 `warning.warn()` 来提醒你，这不是个问题，只是为了防止你忘记使用它。
 
+现在，函数视图也可以生成接口文档了，你可以访问你的服务器查看效果。
 
-## Improve documentation information
-***Simple API*** is generated according to the [`OpenAPI`](https://github.com/OAI/OpenAPI-Specification) specification. 
-In addition to automatically generating function parameters, you can also manually add some additional information to the view yourself, 
-for example: `summary` `description` `responses` and `tags`.
+## 完善接口信息
+`django-simple-api` 是利用 [`OpenAPI`](https://github.com/OAI/OpenAPI-Specification) 的规范来生成接口文档的。
+除了自动生成的参数信息外，你还可以手动为每个接口添加更加详细的信息，例如 `summary`、`description `、`responses` 和 `tags`。
 
-### Add `summary` and `description` to the view
-`summary` and `description` can describe the information of your interface in the interface document, `summary` is used to briefly introduce the function of the interface, and `description` is used to describe more information.
-
-There must be a blank line between `summary` and `description`. If there is no blank line, then all `doc` will be considered as `summary`.
+### 添加 `summary` 和 `description`
+`summary` 用于简要介绍接口的功能，`description` 则用于详细描述接口更多的信息。
 
 ```python
 # views.py
@@ -88,12 +83,14 @@ class JustTest(View):
         """
         return HttpResponse(id)
 ```
+> ⚠️ 注意： `summary` 和 `description` 之间必须有一个空行，如果没有空行，则全部视为 `summary`。
 
-### Add `responses` to the view
-`responses` is also important information in the interface documentation.
-You can define the response information that the interface should return in various situations.
 
-***Simple API*** highly recommends using `pydantic.BaseModel` to define the data structure of the response message, for example:
+### 添加响应信息
+
+`responses` 也是接口文档中的重要信息，你可以定义接口在各种情况下应返回的数据格式和类型。
+
+`django-simple-api` 强烈推荐使用 `pydantic.BaseModel` 来定义响应信息的数据结构，例如：
 
 ```python
 # views.py
@@ -106,7 +103,7 @@ from django.views import View
 from django_simple_api import describe_response
 
 
-# define the data structure for `response`
+# 为 `response` 定义数据结构和类型
 class JustTestResponses(BaseModel):
     code: str
     message: str
@@ -114,12 +111,11 @@ class JustTestResponses(BaseModel):
 
 
 class JustTest(View):
-    
-    # describe the response information of the interface
+    # 使用 @describe_response 为接口添加响应信息
     @describe_response(200, content=JustTestResponses)
     def get(self, request, id: int = Query()):
 
-        # actual response data(just an example)
+        # 实际响应数据(仅做演示)
         resp = {
             "code": "0",
             "message": "success",
@@ -131,7 +127,7 @@ class JustTest(View):
         return JsonResponse(resp)
 ```
 
-Then the interface document will show:
+最终，接口文档会展示为：
 
 ```shell
 {
@@ -143,7 +139,7 @@ Then the interface document will show:
 }
 ```
 
-You can also show the example in the interface document, you only need to add the example to the `BaseModel` and it will be shown in the interface document:
+你也可以直接在接口文档中展示 '示例'，只需将 '示例' 添加到 `pydantic.BaseModel` 中即可：
 
 ```python
 # views.py
@@ -154,6 +150,7 @@ class JustTestResponses(BaseModel):
     data: List[dict]
     
     class Config:
+        # 添加 ‘示例’ 
         schema_extra = {
             "example": {
                 "code": "0",
@@ -165,6 +162,7 @@ class JustTestResponses(BaseModel):
             }
         }
 
+        
 class JustTest(View):
     
     @describe_response(200, content=JustTestResponses)
@@ -173,7 +171,7 @@ class JustTest(View):
         return JsonResponse(resp)
 ```
 
-Then the interface document will show:
+最终接口文档会展示为：
 
 ```shell
 {
@@ -192,7 +190,9 @@ Then the interface document will show:
 }
 ```
 
-The default response type of ***Simple API*** is `application/json`, if you want to set other types, you can use it like this:
+这样，看上去是不是就舒服多了。
+
+另外，`django-simple-api` 默认的响应类型是 `application/json`，如果要设置其他类型，可以这样：
 
 ```python
 # views.py
@@ -204,11 +204,10 @@ class JustTest(View):
         return JsonResponse(id)
 ```
 
-Although we support custom response types and data structures, we recommend that you try not to do this, unless it is a very simple response as in the example,
-otherwise it will take up a lot of space in your code files and it will not conducive to other people in the team to read the code.
+虽然我们支持自定义响应类型和数据结构，但我们建议你尽量不要这样做，除非是像示例中那样非常简单的响应，
+否则会在你的代码文件中占用大量空间并且不利于让团队中的其他人阅读代码。
 
-If you need to describe multiple responses, then we will recommend you to use `describe_responses`, which can describe multiple response states at once, 
-this is equivalent to using multiple `describe_response` simultaneously:
+如果你需要描述多个响应信息，那么我们会推荐使用 `describe_responses`，它可以一次描述多个响应状态，这相当于同时使用多个 `describe_response`：
 
 ```python
 # views.py
@@ -231,51 +230,27 @@ class JustTest(View):
         return JsonResponse(id)
 ```
 
-> Add `responses` to multiple views simultaneously: [wrapper_include](document-generation.md#wrapper_include)
+> 如果你想添加公共的响应信息到多个接口，你可以使用：[wrapper_include](extensions-function.md#wrapper_include)
 
 
-### Add `tags` to the view
+### 添加标记
 
-Tagging interfaces is a good way to manage many interfaces, That's how you tag a view:
+`OpenAPI` 支持通过标记来对接口进行分组管理，你可以通过 `mark_tag` 和 `mark_tags` 来为接口添加标记：
 
 ```python
 from django_simple_api import mark_tags, allow_request_method, Query
 
+# 使用 @mark_tag 为接口添加标签
 @mark_tags("about User")
+@allow_request_method("get")
+def get_name(request, id: int = Query(...)):
+    return HttpResponse(get_name_by_id(id))
+
+# 使用 @mark_tags 为接口添加多个标签
+@mark_tags("tag1", "tag2")
 @allow_request_method("get")
 def get_name(request, id: int = Query(...)):
     return HttpResponse(get_name_by_id(id))
 ```
 
-You can use `@mark_tags("tag1", "tag2")` to tag a view with multiple tags
-
-> Add `tags` to multiple views simultaneously: [wrapper_include](document-generation.md#wrapper_include)
-
-## Extensions function
-
-### `wrapper_include`
-
-We also support tagging multiple URLs at the same time
-
-```python
-from django_simple_api import wrapper_include, mark_tags
-
-urlpatterns = [
-    ...,
-    path("app/", wrapper_include([mark_tags("demo tag")], include("app.urls"))),
-]
-```
-
-The `wrapper_include` in the above code will add `mark_tags` decorators to all views configured in the app URLs
-
-You can also use the `wrapper_include` based functionality
-
-```python
-wrapper_include([mark_tags("demo tag"), describe_response(200, "ok")], include("app.urls"))
-```
-
-### `describe_extra_docs`
-
-### Support for JSON requests
-
-### To be continue ...
+> 如果你想同时为多个接口添加标签，你可以使用：[wrapper_include](extensions-function.md#wrapper_include)
