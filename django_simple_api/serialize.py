@@ -1,8 +1,9 @@
 from django.db import models
 from django.core.exceptions import FieldDoesNotExist
+from typing import List
 
 
-def serialize_model(self: models.Model, excludes: list[str] = None) -> dict:
+def serialize_model(self: models.Model, excludes: List[str] = None) -> dict:
     """
     模型序列化，会根据 select_related 和 prefetch_related 关联查询的结果进行序列化，可以在查询时使用 only、defer 来筛选序列化的字段。
     它不会自做主张的去查询数据库，只用你查询出来的结果，成功避免了 N+1 查询问题。
@@ -10,6 +11,7 @@ def serialize_model(self: models.Model, excludes: list[str] = None) -> dict:
     # See：
     https://aber.sh/articles/A-new-idea-of-serializing-Django-model/
     """
+    excludes = excludes or []
     serialized = set()
 
     def _serialize_model(model) -> dict:
@@ -28,7 +30,9 @@ def serialize_model(self: models.Model, excludes: list[str] = None) -> dict:
 
         result = {
             name: _serialize_model(foreign_key)
-            for name, foreign_key in model.__dict__["_state"].__dict__.get("fields_cache", {}).items()
+            for name, foreign_key in model.__dict__["_state"]
+            .__dict__.get("fields_cache", {})
+            .items()
         }
 
         # 不可暴露的字段
@@ -44,20 +48,21 @@ def serialize_model(self: models.Model, excludes: list[str] = None) -> dict:
             else:
                 result[name] = value
 
-        for name, queryset in model.__dict__.get("_prefetched_objects_cache", {}).items():
-            result[name] = serialize_queryset(queryset)
+        for name, queryset in model.__dict__.get(
+            "_prefetched_objects_cache", {}
+        ).items():
+            result[name] = serialize_queryset(queryset, excludes)  # type: ignore
 
         return result
 
     results = _serialize_model(self)
 
     # 剔除排斥的字段
-    excludes = excludes or []
     for field in excludes:
         del results[field]
 
     return results
 
 
-def serialize_queryset(self: models.QuerySet, excludes: list[str] = None) -> list[dict]:
+def serialize_queryset(self: models.QuerySet, excludes: List[str] = None) -> List[dict]:
     return [serialize_model(model, excludes) for model in self]
