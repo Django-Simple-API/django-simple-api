@@ -1,6 +1,9 @@
 from typing import List
 
 from django.db import models
+from django.conf import settings
+
+from django_simple_api.utils import string_convert, do_nothing
 
 
 def serialize_model(self: models.Model, excludes: List[str] = None) -> dict:
@@ -13,6 +16,11 @@ def serialize_model(self: models.Model, excludes: List[str] = None) -> dict:
     """
     excludes = excludes or []
     serialized = set()
+
+    if getattr(settings, "DSA_SERIALIZE_TO_CAMELCASE", False):
+        to_camel_case_func = string_convert
+    else:
+        to_camel_case_func = do_nothing
 
     def _serialize_model(model) -> dict:
 
@@ -29,7 +37,7 @@ def serialize_model(self: models.Model, excludes: List[str] = None) -> dict:
             return {}
 
         result = {
-            name: _serialize_model(foreign_key)
+            to_camel_case_func(name): _serialize_model(foreign_key)
             for name, foreign_key in model.__dict__["_state"]
             .__dict__.get("fields_cache", {})
             .items()
@@ -47,20 +55,20 @@ def serialize_model(self: models.Model, excludes: List[str] = None) -> dict:
             if name.startswith("_"):
                 continue
 
-            result[name] = value
+            result[to_camel_case_func(name)] = value
 
         for name, queryset in model.__dict__.get(
             "_prefetched_objects_cache", {}
         ).items():
-            result[name] = [_serialize_model(model) for model in queryset]  # type: ignore
+            result[to_camel_case_func(name)] = [_serialize_model(model) for model in queryset]  # type: ignore
 
         return result
 
     results = _serialize_model(self)
 
     # 剔除排斥的字段
-    for field in excludes:
-        del results[field]
+    for field_name in excludes:
+        del results[to_camel_case_func(field_name)]
 
     return results
 

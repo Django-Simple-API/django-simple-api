@@ -30,7 +30,14 @@ def allow_request_method(method: str) -> Callable[[T], T]:
 
     def wrapper(view_func: T) -> T:
         if isclass(view_func):
-            raise TypeError("Can only be used for functions")
+            raise RuntimeError(
+                "`@allow_request_method` Can only be used for functions."
+            )
+
+        if hasattr(view_func, "__method__"):
+            raise RuntimeError(
+                f"`{view_func.__qualname__}` already has the request method `{getattr(view_func, '__method__')}`, cannot repeat the statement!"
+            )
 
         setattr(view_func, "__method__", method.upper())
         return view_func
