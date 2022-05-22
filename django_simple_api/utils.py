@@ -89,3 +89,27 @@ def wrapper_include(wrappers: Sequence[Callable[[T], T]], view: Any) -> Any:
             "view must be a callable or a list/tuple in the case of include()."
         )
     return view
+
+
+def string_convert(string: str):
+    """
+    将连字符格式转成小驼峰格式
+    example: user_name -> userName
+    """
+
+    char_list = string.split("_")
+
+    # 首个单词不转换
+    for index, char in enumerate(char_list[1:], start=1):
+        char_list[index] = char.capitalize()
+
+    return "".join(char_list)
+
+
+def do_nothing(x):
+    return x
+
+
+if __name__ == "__main__":
+    s = string_convert("user")
+    print(s)
