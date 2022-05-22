@@ -1,6 +1,6 @@
-from django.db import models
-from django.core.exceptions import FieldDoesNotExist
 from typing import List
+
+from django.db import models
 
 
 def serialize_model(self: models.Model, excludes: List[str] = None) -> dict:
@@ -35,18 +35,19 @@ def serialize_model(self: models.Model, excludes: List[str] = None) -> dict:
             .items()
         }
 
-        # 不可暴露的字段
         buried_fields = getattr(model, "buried_fields", [])
+
         for name, value in model.__dict__.items():
+
+            # 敏感字段不需要序列化
             if name in buried_fields:
                 continue
-            try:
-                model._meta.get_field(name)
-            except FieldDoesNotExist:
-                # 非模型字段
+
+            # 私有属性不需要序列化
+            if name.startswith("_"):
                 continue
-            else:
-                result[name] = value
+
+            result[name] = value
 
         for name, queryset in model.__dict__.get(
             "_prefetched_objects_cache", {}
