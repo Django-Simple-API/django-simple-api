@@ -52,7 +52,7 @@ def serialize_model(self: models.Model, excludes: List[str] = None) -> dict:
         for name, queryset in model.__dict__.get(
             "_prefetched_objects_cache", {}
         ).items():
-            result[name] = serialize_queryset(queryset, excludes)  # type: ignore
+            result[name] = [_serialize_model(model) for model in queryset]  # type: ignore
 
         return result
 
