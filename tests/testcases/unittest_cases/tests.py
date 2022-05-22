@@ -148,13 +148,13 @@ class TestUpload(TestCase):
         self.assertEqual(resp.status_code, 422)
 
     def test_upload_file_success(self):
-        file_path = Path(__file__).resolve(strict=True).parent / "洛神赋.md"
+        file_path = Path(__file__).resolve(strict=True).parent.parent / "洛神赋.md"
         with open(file_path, "rb") as file:
             resp = self.client.post("/test/test-upload-file-view", data={"file": file})
             self.assertEqual(resp.status_code, 200)
 
     def test_upload_image_failed(self):
-        file_path = Path(__file__).resolve(strict=True).parent / "洛神赋.md"
+        file_path = Path(__file__).resolve(strict=True).parent.parent / "洛神赋.md"
         with open(file_path, "rb") as file:
             resp = self.client.post(
                 "/test/test-upload-image-view", data={"image": file}
@@ -162,7 +162,7 @@ class TestUpload(TestCase):
             self.assertEqual(resp.status_code, 422)
 
     def test_upload_image_success(self):
-        image_path = Path(__file__).resolve(strict=True).parent / "Python39.png"
+        image_path = Path(__file__).resolve(strict=True).parent.parent / "Python39.png"
 
         with open(image_path, "rb") as image:
             resp = self.client.post(
