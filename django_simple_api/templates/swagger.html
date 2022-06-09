@@ -1,9 +1,8 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="">
 
 <head>
-    <link type="text/css" rel="stylesheet" href="{% static 'django_simple_api/swagger-ui.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% url 'django_simple_api:get_static' %}?file_no=1">
     <title>OpenAPI power by Django-Simple-Api</title>
 
     <style>
@@ -26,7 +25,7 @@
 
 <body>
 <div id="swagger-ui"></div>
-<script src="{% static 'django_simple_api/swagger-ui-bundle.js' %}"></script>
+<script src="{% url 'django_simple_api:get_static' %}?file_no=2"></script>
 <script>
     const ui = SwaggerUIBundle({
         url: './get-docs/',

@@ -1,10 +1,11 @@
 import operator
 import warnings
+from pathlib import Path
 from copy import deepcopy
 from functools import reduce
 from typing import Any, Dict, Tuple
 
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, HttpResponse
 from django.shortcuts import render
 
 from .exceptions import RequestValidationError
@@ -111,7 +112,6 @@ def get_docs(
     version: str = "0.1.0",
     **kwargs: Any,
 ):
-
     openapi_docs = {
         "openapi": "3.0.0",
         "info": {"title": title, "description": description, "version": version},
@@ -144,3 +144,28 @@ def get_docs(
     openapi_docs["paths"] = {k: v for k, v in paths.items() if v}
     openapi_docs["definitions"] = deepcopy(definitions)
     return JsonResponse(openapi_docs, json_dumps_params={"ensure_ascii": False})
+
+
+def get_static(request):
+    file_no = request.GET.get("file_no")
+
+    static_path = Path(__file__).parent.absolute() / "static"
+    if file_no == "1":
+        file_path = static_path / "swagger-ui.css"
+        content_type = "text/css"
+    elif file_no == "2":
+        file_path = static_path / "swagger-ui-bundle.js"
+        content_type = "application/x-javascript"
+
+    elif file_no == "3":
+        file_path = static_path / "redoc.standalone.js"
+        content_type = "application/x-javascript"
+    else:
+        return HttpResponse()
+
+    with open(file_path, "rb") as file:
+        file = file.read()
+
+    response = HttpResponse(file)
+    response["Content-Type"] = content_type
+    return response

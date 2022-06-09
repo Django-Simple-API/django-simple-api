@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html>
 
@@ -27,7 +26,7 @@
 
 <body>
 <redoc spec-url='./get-docs/'></redoc>
-<script src="{% static 'django_simple_api/swagger-ui.css' %}"></script>
+<script src="{% url 'django_simple_api:get_static' %}?file_no=3"></script>
 </body>
 
 </html>
