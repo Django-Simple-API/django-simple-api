@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 
@@ -26,7 +27,7 @@
 
 <body>
 <redoc spec-url='./get-docs/'></redoc>
-<script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
+<script src="{% static 'django_simple_api/swagger-ui.css' %}"></script>
 </body>
 
 </html>
