@@ -22,7 +22,7 @@ python = "^3.7"
 
 django = "*"
 pydantic = "^1.8.1"
-Pillow = "^8.2.0"
+Pillow = ">=8.2,<10.0"
 
 [tool.poetry.dev-dependencies]
 black = {version = "*", allow-prereleases = true}
